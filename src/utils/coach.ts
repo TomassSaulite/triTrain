@@ -1,7 +1,7 @@
-import type { PhaseType, WeekProgress, WorkoutKind } from '@/api/types'
+import type { PhaseType, Sport, WeekProgress, WorkoutKind } from '@/api/types'
 
 /** Why a session of each kind is in the plan, in the coach's words. */
-export const KIND_PURPOSE: Record<WorkoutKind, string> = {
+const KIND_PURPOSE: Record<WorkoutKind, string> = {
   endurance: 'Builds your aerobic engine. Keep it conversational.',
   long: 'Builds the endurance to go the distance. Steady, and fuel as you would on race day.',
   tempo: 'Raises the pace you can hold for hours. Comfortably hard, never all-out.',
@@ -10,6 +10,23 @@ export const KIND_PURPOSE: Record<WorkoutKind, string> = {
   race_pace: 'Practises race effort so race day feels familiar.',
   recovery: 'Helps you absorb the hard work. Easier than you think it should be.',
   technique: 'Makes you faster for the same effort through better form.',
+}
+
+/** Where a sport needs its own words: you cannot eat in the pool, and bricks are about the switch. */
+const SPORT_PURPOSE: Partial<Record<Sport, Partial<Record<WorkoutKind, string>>>> = {
+  swim: {
+    long: 'Builds the endurance to swim the whole distance strongly. Hold good form to the end.',
+  },
+  brick: {
+    endurance:
+      'Teaches your legs to run straight off the bike. Keep the first minutes of the run controlled.',
+    long: 'Teaches your legs to run straight off the bike. Keep the first minutes of the run controlled.',
+  },
+}
+
+/** Why a session is in the plan, in the coach's words. */
+export function sessionPurpose(sport: Sport, kind: WorkoutKind): string {
+  return SPORT_PURPOSE[sport]?.[kind] ?? KIND_PURPOSE[kind]
 }
 
 const PHASE_FOCUS: Record<PhaseType, string> = {

@@ -13,7 +13,7 @@ import AppCard from '@/components/ui/AppCard.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useAuthStore } from '@/stores/auth'
-import { KIND_PURPOSE, weekFocus } from '@/utils/coach'
+import { sessionPurpose, weekFocus } from '@/utils/coach'
 import { addDays, formatDate, startOfWeek, today } from '@/utils/dates'
 import { formatDuration, formatPercent, formatTss } from '@/utils/format'
 import { hasSeen, markSeen, unmarkSeen } from '@/utils/seen'
@@ -126,7 +126,7 @@ function formLabel(tsb: number): string {
           <ul v-if="todayEntry && todayEntry.workouts.length" class="space-y-3">
             <li v-for="w in todayEntry.workouts" :key="w.id">
               <WorkoutCard :workout="w" />
-              <p class="mt-1 px-1 text-xs text-slate-500">{{ KIND_PURPOSE[w.kind] }}</p>
+              <p class="mt-1 px-1 text-xs text-slate-500">{{ sessionPurpose(w.sport, w.kind) }}</p>
             </li>
           </ul>
           <p v-else-if="todayEntry?.races.length" class="text-sm">

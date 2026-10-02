@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PhaseType, WeekProgress } from '@/api/types'
-import { weekFocus } from './coach'
+import { sessionPurpose, weekFocus } from './coach'
 
 function week(start: string, phase: PhaseType, isRecovery = false): WeekProgress {
   return { start_date: start, phase, is_recovery: isRecovery } as WeekProgress
@@ -25,5 +25,14 @@ describe('weekFocus', () => {
 
   it('returns null outside the plan', () => {
     expect(weekFocus(weeks, '2027-01-04')).toBeNull()
+  })
+})
+
+describe('sessionPurpose', () => {
+  it('uses sport-specific words where the general ones do not fit', () => {
+    expect(sessionPurpose('swim', 'long')).not.toContain('fuel')
+    expect(sessionPurpose('bike', 'long')).toContain('fuel')
+    expect(sessionPurpose('brick', 'endurance')).toContain('off the bike')
+    expect(sessionPurpose('swim', 'technique')).toContain('better form')
   })
 })

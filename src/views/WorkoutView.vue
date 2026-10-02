@@ -16,7 +16,7 @@ import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useForm } from '@/composables/useForm'
 import { useToast } from '@/composables/useToast'
-import { KIND_PURPOSE } from '@/utils/coach'
+import { sessionPurpose } from '@/utils/coach'
 import { addDays, formatDate, today } from '@/utils/dates'
 import { formatDistance, formatDuration, formatPercent, formatTss, titleCase } from '@/utils/format'
 import { isOpenStatus } from '@/utils/sports'
@@ -140,7 +140,7 @@ async function skip(): Promise<void> {
           {{ titleCase(w.kind) }}
         </p>
         <p class="mt-3 rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-950">
-          <span class="font-medium">Coach:</span> {{ KIND_PURPOSE[w.kind] }}
+          <span class="font-medium">Coach:</span> {{ sessionPurpose(w.sport, w.kind) }}
         </p>
       </header>
 
