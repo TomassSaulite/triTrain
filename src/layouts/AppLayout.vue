@@ -5,8 +5,10 @@ import { useAuthStore } from '@/stores/auth'
 const auth = useAuthStore()
 const router = useRouter()
 
+const ACTIVE = 'border-indigo-600! text-indigo-700!'
+
 const links = [
-  { to: { name: 'dashboard' }, label: 'Today' },
+  { to: { name: 'dashboard' }, label: 'Today', exact: true },
   { to: { name: 'calendar' }, label: 'Calendar' },
   { to: { name: 'plan' }, label: 'Plan' },
   { to: { name: 'races' }, label: 'Races' },
@@ -33,7 +35,8 @@ async function logout(): Promise<void> {
             :key="link.label"
             :to="link.to"
             class="border-b-2 border-transparent px-3 py-3.5 text-sm font-medium whitespace-nowrap text-slate-600 hover:text-slate-900"
-            active-class="border-indigo-600! text-indigo-700!"
+            :active-class="link.exact ? '' : ACTIVE"
+            :exact-active-class="ACTIVE"
           >
             {{ link.label }}
           </RouterLink>
