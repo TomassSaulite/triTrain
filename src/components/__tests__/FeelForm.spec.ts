@@ -1,5 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import FeelForm from '@/components/feel/FeelForm.vue'
 import { toasts } from '@/composables/useToast'
 
@@ -13,6 +14,7 @@ vi.mock('@/api', () => ({
 }))
 
 describe('FeelForm', () => {
+  beforeEach(() => setActivePinia(createPinia()))
   afterEach(() => {
     rate.mockReset()
     toasts.splice(0)

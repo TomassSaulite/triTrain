@@ -6,6 +6,7 @@ import AppAlert from '@/components/ui/AppAlert.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import { useForm } from '@/composables/useForm'
 import { useToast } from '@/composables/useToast'
+import { useUnratedStore } from '@/stores/unrated'
 import { FEEL_SCALES, RPE_LEVELS } from '@/utils/feel'
 
 /**
@@ -17,6 +18,7 @@ const emit = defineEmits<{ saved: [feedback: SessionFeedback]; removed: [] }>()
 
 const id = useId()
 const toast = useToast()
+const unrated = useUnratedStore()
 const { submitting, error, submit } = useForm()
 
 function fromFeedback(f?: SessionFeedback | null): SessionFeedbackInput {
@@ -45,6 +47,7 @@ async function save(): Promise<void> {
   if (!result) return
 
   emit('saved', result.data)
+  void unrated.refresh()
   if (result.plan_change) {
     toast.info(`Thanks. The coach adjusted your plan: ${result.plan_change}`)
   } else {
@@ -57,6 +60,7 @@ async function remove(): Promise<void> {
 
   Object.assign(draft, fromFeedback(null))
   emit('removed')
+  void unrated.refresh()
 }
 </script>
 

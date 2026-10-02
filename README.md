@@ -36,11 +36,15 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
 - **Workouts**: the library the coach builds plans from. Browse and inspect every workout,
   and build your own (or copy and adapt one) with a step editor. Your workouts are preferred
   wherever they fit a slot.
+- **Thresholds over time**: Settings charts FTP, run pace, swim pace and heart rate across the
+  season, and the dashboard prompts a retest (with how to do it) when one is over eight weeks old.
 - **Settings**: profile and week, coaching knobs (ramp limit, recovery cadence, target fitness,
   daily time limits, sport split), thresholds, travel and busy days, Strava, and a private
   calendar link that puts your sessions and races in Google, Apple or Outlook calendar.
 
-On phones the main sections sit in a bottom tab bar, with the rest under More.
+On phones the main sections sit in a bottom tab bar, with the rest under More. A badge on
+Activities (and on More) counts recent sessions still waiting for a "how did it feel?" rating.
+The app follows the device's light or dark mode, or a theme picked under Settings → Appearance.
 
 ## Getting started
 

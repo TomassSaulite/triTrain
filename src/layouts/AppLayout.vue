@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOnline } from '@/composables/useOnline'
 import { useAuthStore } from '@/stores/auth'
+import { useUnratedStore } from '@/stores/unrated'
 
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 
 const online = useOnline()
+const unrated = useUnratedStore()
+onMounted(() => void unrated.refresh())
+
+/** A count shown next to a section, such as sessions waiting for a rating. */
+const badge = (name: string) => (name === 'activities' ? unrated.count : 0)
 
 const ACTIVE = 'border-indigo-600! text-indigo-700!'
 
@@ -65,6 +71,12 @@ async function logout(): Promise<void> {
             :aria-current="section === link.name ? 'page' : undefined"
           >
             {{ link.label }}
+            <span
+              v-if="badge(link.name)"
+              class="ml-1 rounded-full bg-indigo-600 px-1.5 text-[11px] font-semibold text-white tabular-nums"
+              :aria-label="`${badge(link.name)} to rate`"
+              >{{ badge(link.name) }}</span
+            >
           </RouterLink>
         </nav>
         <button class="ml-auto hidden text-sm text-slate-500 hover:text-slate-800 md:block" @click="logout">
@@ -99,6 +111,11 @@ async function logout(): Promise<void> {
           :class="section === link.name ? 'font-semibold text-indigo-700' : 'text-slate-700'"
         >
           {{ link.label }}
+          <span
+            v-if="badge(link.name)"
+            class="ml-1 rounded-full bg-indigo-600 px-1.5 text-[11px] font-semibold text-white tabular-nums"
+            >{{ badge(link.name) }} to rate</span
+          >
         </RouterLink>
         <button
           type="button"
@@ -140,11 +157,19 @@ async function logout(): Promise<void> {
             aria-controls="more-menu"
             @click="moreOpen = !moreOpen"
           >
-            <svg viewBox="0 0 24 24" class="size-6" fill="currentColor" aria-hidden="true">
-              <circle cx="5" cy="12" r="1.75" />
-              <circle cx="12" cy="12" r="1.75" />
-              <circle cx="19" cy="12" r="1.75" />
-            </svg>
+            <span class="relative">
+              <span
+                v-if="unrated.count"
+                class="absolute -top-1 -right-2 grid size-4 place-items-center rounded-full bg-indigo-600 text-[10px] font-semibold text-white tabular-nums"
+                :aria-label="`${unrated.count} sessions to rate`"
+                >{{ unrated.count }}</span
+              >
+              <svg viewBox="0 0 24 24" class="size-6" fill="currentColor" aria-hidden="true">
+                <circle cx="5" cy="12" r="1.75" />
+                <circle cx="12" cy="12" r="1.75" />
+                <circle cx="19" cy="12" r="1.75" />
+              </svg>
+            </span>
             More
           </button>
         </li>

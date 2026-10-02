@@ -16,6 +16,7 @@ import AppCard from '@/components/ui/AppCard.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useAuthStore } from '@/stores/auth'
+import { RATE_WITHIN_DAYS } from '@/stores/unrated'
 import { sessionPurpose, weekFocus } from '@/utils/coach'
 import { addDays, formatDate, startOfWeek, today } from '@/utils/dates'
 import { formatDuration, formatPercent, formatTss } from '@/utils/format'
@@ -23,9 +24,6 @@ import { hasSeen, markSeen, unmarkSeen } from '@/utils/seen'
 
 const auth = useAuthStore()
 const todayDate = today()
-
-/** Sessions from this many days back are offered for rating. */
-const RATE_WITHIN_DAYS = 3
 
 /** The active plan, or null when the athlete has not built one yet. */
 async function currentPlan(): Promise<Plan | null> {
