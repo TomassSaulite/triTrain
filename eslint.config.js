@@ -9,6 +9,8 @@ export default defineConfigWithVueTs(
   {
     rules: {
       'vue/multi-word-component-names': 'off',
+      // Optional props are typed as possibly undefined, so defaults are not required.
+      'vue/require-default-prop': 'off',
       'vue/block-lang': ['error', { script: { lang: 'ts' } }],
       '@typescript-eslint/consistent-type-imports': 'error',
     },
