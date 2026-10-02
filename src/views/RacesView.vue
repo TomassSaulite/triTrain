@@ -12,6 +12,7 @@ import AppCard from '@/components/ui/AppCard.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useForm } from '@/composables/useForm'
+import { distanceLabel, isTriathlon } from '@/utils/races'
 import { addDays, nextSunday, formatDate, today } from '@/utils/dates'
 
 const router = useRouter()
@@ -156,14 +157,18 @@ async function buildPlan(race: Race): Promise<void> {
                 >
               </p>
               <p class="text-sm text-slate-500">
-                {{ race.distance }} ·
+                {{ distanceLabel(race.distance) }} ·
                 {{ formatDate(race.date, { day: 'numeric', month: 'long', year: 'numeric' }) }} ·
                 {{ race.days_to_go }} days
               </p>
             </div>
             <div class="flex gap-1.5">
               <AppButton
-                v-if="race.priority === 'A' && race.id !== page.data.value?.planRaceId"
+                v-if="
+                  race.priority === 'A' &&
+                  isTriathlon(race.distance) &&
+                  race.id !== page.data.value?.planRaceId
+                "
                 size="sm"
                 :loading="submitting"
                 @click="buildPlan(race)"

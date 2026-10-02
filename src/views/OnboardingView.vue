@@ -108,7 +108,7 @@ async function finish(withRace: boolean): Promise<void> {
       <ProfileForm v-if="step === 0" v-model="profile" :errors="fieldErrors" />
       <ScheduleForm v-else-if="step === 1" v-model="schedule" :errors="fieldErrors" />
       <ThresholdsForm v-else-if="step === 2" v-model="thresholds" :errors="thresholdErrors" />
-      <RaceForm v-else v-model="race" :errors="fieldErrors" />
+      <RaceForm v-else v-model="race" :errors="fieldErrors" triathlon-only />
 
       <div class="mt-6 flex items-center justify-between gap-3">
         <AppButton v-if="step > 0" variant="ghost" @click="step--">Back</AppButton>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useDialog } from '@/composables/useDialog'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { workoutsApi } from '@/api'
-import type { PlannedWorkoutDetail, StructureBlock } from '@/api/types'
+import type { PlannedWorkoutDetail, StructureBlock, WorkoutAlternative } from '@/api/types'
 import SportBadge from '@/components/SportBadge.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
 import StepList from '@/components/StepList.vue'
+import { kindLabel } from '@/components/templates/labels'
 import WorkoutProfile from '@/components/charts/WorkoutProfile.vue'
 import AppAlert from '@/components/ui/AppAlert.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -33,9 +34,34 @@ function anyResolved(blocks: StructureBlock[]): boolean {
 }
 
 const hasResolvedTargets = computed(() => anyResolved(w.value?.resolved_structure?.steps ?? []))
-const editable = computed(
-  () => w.value !== null && w.value.parent_id === null && isOpenStatus(w.value.status),
+/** Upcoming sessions can be changed; brick halves only in length or workout. */
+const changeable = computed(
+  () => w.value !== null && isOpenStatus(w.value.status) && w.value.activity_id === null,
 )
+const minutes = ref(0)
+const alternatives = ref<WorkoutAlternative[] | null>(null)
+const loadingAlternatives = ref(false)
+
+watch(w, (value) => {
+  if (value) minutes.value = Math.round(value.target_duration_s / 60)
+  alternatives.value = null
+})
+
+async function resize(): Promise<void> {
+  const updated = await submit(() => workoutsApi.resize(Number(props.id), minutes.value * 60))
+  if (updated) workout.data.value = updated
+}
+
+async function loadAlternatives(): Promise<void> {
+  loadingAlternatives.value = true
+  alternatives.value = (await submit(() => workoutsApi.alternatives(Number(props.id)))) ?? null
+  loadingAlternatives.value = false
+}
+
+async function swap(templateId: number): Promise<void> {
+  const updated = await submit(() => workoutsApi.swap(Number(props.id), templateId))
+  if (updated) workout.data.value = updated
+}
 
 async function move(): Promise<void> {
   const updated = await submit(() => workoutsApi.move(Number(props.id), moveTo.value))
@@ -137,25 +163,86 @@ async function skip(): Promise<void> {
         </p>
       </AppCard>
 
-      <AppCard v-if="editable" title="Change it">
-        <form class="flex flex-wrap items-end gap-3" @submit.prevent="move">
-          <label class="text-sm">
-            <span class="block font-medium text-slate-700">Move to</span>
-            <input
-              v-model="moveTo"
-              type="date"
-              :min="today()"
-              required
-              class="mt-1 rounded-md px-3 py-2 text-sm ring-1 ring-slate-300"
-            />
-          </label>
-          <AppButton type="submit" variant="secondary" :loading="submitting" :disabled="!moveTo"
-            >Move</AppButton
-          >
-          <AppButton variant="ghost" class="ml-auto" :disabled="submitting" @click="skip"
-            >Skip this workout</AppButton
-          >
-        </form>
+      <AppCard v-if="changeable" title="Change it">
+        <div class="space-y-5">
+          <form v-if="!w.children?.length" class="flex flex-wrap items-end gap-3" @submit.prevent="resize">
+            <label class="text-sm">
+              <span class="block font-medium text-slate-700">Length (minutes)</span>
+              <input
+                v-model.number="minutes"
+                type="number"
+                min="10"
+                max="360"
+                step="5"
+                required
+                class="mt-1 w-28 rounded-md px-3 py-2 text-sm ring-1 ring-slate-300"
+              />
+            </label>
+            <AppButton
+              type="submit"
+              variant="secondary"
+              :loading="submitting"
+              :disabled="minutes === Math.round(w.target_duration_s / 60)"
+            >
+              Change length
+            </AppButton>
+            <p class="w-full text-xs text-slate-500">The main set is scaled; warm-up and cool-down stay.</p>
+          </form>
+
+          <div v-if="!w.children?.length">
+            <AppButton
+              v-if="!alternatives"
+              variant="secondary"
+              :loading="loadingAlternatives"
+              @click="loadAlternatives"
+            >
+              Swap for another workout
+            </AppButton>
+            <template v-else>
+              <p class="text-sm font-medium text-slate-700">Swap for</p>
+              <p v-if="alternatives.length === 0" class="mt-1 text-sm text-slate-500">
+                No other workouts of this type in your library.
+              </p>
+              <ul class="mt-2 grid gap-2 sm:grid-cols-2">
+                <li v-for="a in alternatives" :key="a.id">
+                  <button
+                    type="button"
+                    class="w-full rounded-md px-3 py-2 text-left text-sm ring-1 ring-slate-200 hover:ring-indigo-400 disabled:opacity-50"
+                    :disabled="submitting"
+                    @click="swap(a.id)"
+                  >
+                    <span class="font-medium">{{ a.name }}</span>
+                    <span
+                      v-if="a.is_personal"
+                      class="ml-1 rounded bg-emerald-100 px-1 text-[10px] font-semibold text-emerald-800 uppercase"
+                      >Mine</span
+                    >
+                    <span class="block text-xs text-slate-500">{{ kindLabel(a.kind) }}</span>
+                  </button>
+                </li>
+              </ul>
+            </template>
+          </div>
+
+          <form v-if="w.parent_id === null" class="flex flex-wrap items-end gap-3" @submit.prevent="move">
+            <label class="text-sm">
+              <span class="block font-medium text-slate-700">Move to</span>
+              <input
+                v-model="moveTo"
+                type="date"
+                :min="today()"
+                required
+                class="mt-1 rounded-md px-3 py-2 text-sm ring-1 ring-slate-300"
+              />
+            </label>
+            <AppButton type="submit" variant="secondary" :loading="submitting" :disabled="!moveTo"
+              >Move</AppButton
+            >
+            <AppButton variant="ghost" class="ml-auto" :disabled="submitting" @click="skip"
+              >Skip this workout</AppButton
+            >
+          </form>
+        </div>
       </AppCard>
     </div>
   </LoadingState>

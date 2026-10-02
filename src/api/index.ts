@@ -23,6 +23,7 @@ import type {
   ThresholdSuggestion,
   User,
   WeekProgress,
+  WorkoutAlternative,
   WorkoutTemplate,
   WorkoutTemplateInput,
 } from './types'
@@ -115,6 +116,16 @@ export const workoutsApi = {
   move: (id: number, date: string) =>
     unwrap(client.patch<Data<PlannedWorkoutDetail>>(`planned-workouts/${id}`, { date })),
   skip: (id: number) => unwrap(client.post<Data<PlannedWorkoutDetail>>(`planned-workouts/${id}/skip`)),
+  resize: (id: number, durationSeconds: number) =>
+    unwrap(
+      client.patch<Data<PlannedWorkoutDetail>>(`planned-workouts/${id}`, { duration_s: durationSeconds }),
+    ),
+  alternatives: (id: number) =>
+    unwrap(client.get<Data<WorkoutAlternative[]>>(`planned-workouts/${id}/alternatives`)),
+  swap: (id: number, templateId: number) =>
+    unwrap(
+      client.post<Data<PlannedWorkoutDetail>>(`planned-workouts/${id}/swap`, { template_id: templateId }),
+    ),
 }
 
 export const activitiesApi = {

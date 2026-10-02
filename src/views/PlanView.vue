@@ -12,6 +12,7 @@ import AppCard from '@/components/ui/AppCard.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useForm } from '@/composables/useForm'
+import { distanceLabel } from '@/utils/races'
 import { daysBetween, formatDate, formatDateTime, startOfWeek, today } from '@/utils/dates'
 import { formatDuration, formatPercent, formatTss } from '@/utils/format'
 
@@ -165,7 +166,7 @@ function changeLines(revision: PlanRevision): string[] {
         </div>
         <div class="rounded-lg bg-white p-3 ring-1 ring-slate-200">
           <dt class="text-xs text-slate-500">Distance</dt>
-          <dd class="text-xl font-semibold capitalize">{{ plan.race?.distance }}</dd>
+          <dd class="text-xl font-semibold">{{ plan.race && distanceLabel(plan.race.distance) }}</dd>
         </div>
       </dl>
 

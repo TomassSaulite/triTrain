@@ -6,7 +6,8 @@
 export type Sport = 'swim' | 'bike' | 'run' | 'brick' | 'strength'
 export type Discipline = 'swim' | 'bike' | 'run'
 export type Experience = 'novice' | 'intermediate' | 'advanced'
-export type RaceDistance = 'sprint' | 'olympic' | 'half' | 'full'
+export type RaceDistance =
+  'sprint' | 'olympic' | 'half' | 'full' | '5k' | '10k' | 'half_marathon' | 'marathon'
 export type RacePriority = 'A' | 'B' | 'C'
 export type PlanStatus = 'active' | 'completed' | 'archived'
 export type PhaseType = 'base' | 'build' | 'peak' | 'taper'
@@ -350,4 +351,13 @@ export interface WorkoutTemplateInput {
   max_s: number
   structure: WorkoutStructure
   is_active?: boolean
+}
+
+export interface WorkoutAlternative {
+  id: number
+  name: string
+  kind: WorkoutKind
+  min_s: number
+  max_s: number
+  is_personal: boolean
 }
