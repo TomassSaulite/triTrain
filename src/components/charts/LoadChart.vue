@@ -90,7 +90,8 @@ const last = computed(() => props.points.at(-1))
 const xTicks = computed(() => {
   const n = props.points.length
   if (n < 2) return []
-  const count = Math.min(5, n)
+  // About one date label per 80px so they never collide on narrow screens.
+  const count = Math.max(2, Math.min(5, n, Math.floor(plotWidth.value / 80) + 1))
   return Array.from({ length: count }, (_, k) => Math.round((k / (count - 1)) * (n - 1)))
 })
 
