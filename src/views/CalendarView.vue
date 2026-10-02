@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { calendarApi } from '@/api'
-import type { CalendarDay } from '@/api/types'
+import { calendarApi, workoutsApi } from '@/api'
+import type { CalendarDay, PlannedWorkout } from '@/api/types'
 import SportBadge from '@/components/SportBadge.vue'
 import WorkoutCard from '@/components/WorkoutCard.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
-import { useAsync } from '@/composables/useAsync'
+import { errorMessage, useAsync } from '@/composables/useAsync'
+import { useToast } from '@/composables/useToast'
 import { WEEKDAYS, addDays, formatDate, parseDate, startOfWeek, today } from '@/utils/dates'
 import { formatDuration, formatTss } from '@/utils/format'
+import { isOpenStatus } from '@/utils/sports'
 
 const route = useRoute()
 const router = useRouter()
@@ -54,6 +56,67 @@ const title = computed(() => {
 
 /** Activities the coach could not match to a planned session. */
 const extras = (day: CalendarDay) => day.activities.filter((a) => !a.planned_workout_id)
+
+const dayTime = (day: CalendarDay) =>
+  day.workouts.filter((w) => w.status !== 'dropped').reduce((sum, w) => sum + w.target_duration_s, 0)
+
+/*
+ * Drag a session to another day to reschedule it. Keyboard and touch users
+ * get the same through "Move to" on the workout page.
+ */
+const toast = useToast()
+const dragging = ref<PlannedWorkout | null>(null)
+const dropTarget = ref<string | null>(null)
+
+const movable = (w: PlannedWorkout) =>
+  w.parent_id === null && w.activity_id === null && isOpenStatus(w.status)
+const canDrop = (date: string) => dragging.value !== null && date >= today() && date !== dragging.value.date
+
+function dragStart(event: DragEvent, workout: PlannedWorkout): void {
+  dragging.value = workout
+  event.dataTransfer?.setData('text/plain', String(workout.id))
+  if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move'
+}
+
+function dragOver(event: DragEvent, date: string): void {
+  if (!canDrop(date)) return
+  event.preventDefault()
+  dropTarget.value = date
+}
+
+function dragEnd(): void {
+  dragging.value = null
+  dropTarget.value = null
+}
+
+async function moveWorkout(workout: PlannedWorkout, date: string): Promise<boolean> {
+  try {
+    await workoutsApi.move(workout.id, date)
+    await calendar.run()
+
+    return true
+  } catch (e) {
+    toast.error(errorMessage(e))
+
+    return false
+  }
+}
+
+async function drop(date: string): Promise<void> {
+  const workout = dragging.value
+  dragEnd()
+  if (!workout || date < today() || date === workout.date) return
+
+  const from = workout.date
+  if (await moveWorkout(workout, date)) {
+    toast.success(`Moved "${workout.title}" to ${formatDate(date)}.`, {
+      label: 'Undo',
+      run: async () => {
+        if (await moveWorkout(workout, from)) toast.info(`"${workout.title}" is back on ${formatDate(from)}.`)
+      },
+    })
+  }
+}
 </script>
 
 <template>
@@ -109,8 +172,55 @@ const extras = (day: CalendarDay) => day.activities.filter((a) => !a.planned_wor
       :error="calendar.error.value"
       @retry="calendar.run"
     >
-      <div class="overflow-x-auto">
-        <div class="grid min-w-[56rem] grid-cols-7 gap-2" :class="{ 'opacity-60': calendar.loading.value }">
+      <!-- Phones: one day per row. -->
+      <ol class="space-y-3 md:hidden" :class="{ 'opacity-60': calendar.loading.value }">
+        <li
+          v-for="day in calendar.data.value?.data ?? []"
+          :key="day.date"
+          class="rounded-lg p-3"
+          :class="
+            day.date === today() ? 'bg-indigo-50 ring-1 ring-indigo-300' : 'bg-white ring-1 ring-slate-200'
+          "
+        >
+          <p class="mb-2 flex justify-between text-sm font-medium">
+            <span :class="day.date === today() ? 'text-indigo-700' : 'text-slate-700'">
+              {{ day.date === today() ? 'Today · ' : '' }}{{ formatDate(day.date) }}
+            </span>
+            <span v-if="dayTime(day)" class="text-slate-500 tabular-nums">{{
+              formatDuration(dayTime(day))
+            }}</span>
+          </p>
+          <div class="space-y-1.5">
+            <p
+              v-for="race in day.races"
+              :key="race.id"
+              class="rounded-md bg-amber-100 px-2 py-1.5 text-sm font-semibold text-amber-900"
+            >
+              {{ race.priority }} race · {{ race.name }}
+            </p>
+            <WorkoutCard v-for="w in day.workouts" :key="w.id" :workout="w" />
+            <p
+              v-for="a in extras(day)"
+              :key="a.id"
+              class="rounded-md px-3 py-2 text-sm text-slate-700 ring-1 ring-slate-300 ring-dashed"
+            >
+              <SportBadge :sport="a.sport" />
+              {{ a.name ?? 'Extra session' }} · {{ formatDuration(a.duration_s) }}
+            </p>
+            <p
+              v-if="!day.workouts.length && !day.races.length && !extras(day).length"
+              class="text-sm text-slate-400"
+            >
+              Rest
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <!-- Larger screens: a week grid where sessions can be dragged to another day. -->
+      <div class="hidden md:block">
+        <p class="mb-2 text-xs text-slate-500">Drag an upcoming session to another day to move it.</p>
+        <div class="grid grid-cols-7 gap-2" :class="{ 'opacity-60': calendar.loading.value }">
           <p v-for="day in WEEKDAYS" :key="day.value" class="px-1 text-xs font-medium text-slate-500">
             {{ day.short }}
           </p>
@@ -118,15 +228,25 @@ const extras = (day: CalendarDay) => day.activities.filter((a) => !a.planned_wor
             <section
               v-for="day in row"
               :key="day.date"
-              class="min-h-32 rounded-lg p-2"
-              :class="day.date === today() ? 'bg-indigo-50 ring-1 ring-indigo-300' : 'bg-slate-100/70'"
+              class="min-h-32 min-w-0 rounded-lg p-2 transition"
+              :class="[
+                day.date === today() ? 'bg-indigo-50 ring-1 ring-indigo-300' : 'bg-slate-100/70',
+                dropTarget === day.date ? 'bg-indigo-100! ring-2! ring-indigo-500!' : '',
+                dragging && !canDrop(day.date) && day.date !== dragging.date ? 'opacity-50' : '',
+              ]"
               :aria-label="formatDate(day.date, { weekday: 'long', day: 'numeric', month: 'long' })"
+              @dragover="dragOver($event, day.date)"
+              @dragleave="dropTarget === day.date && (dropTarget = null)"
+              @drop.prevent="drop(day.date)"
             >
               <p
-                class="mb-1.5 text-xs font-medium"
+                class="mb-1.5 flex justify-between text-xs font-medium"
                 :class="day.date === today() ? 'text-indigo-700' : 'text-slate-500'"
               >
-                {{ formatDate(day.date, { day: 'numeric', month: 'short' }) }}
+                <span>{{ formatDate(day.date, { day: 'numeric', month: 'short' }) }}</span>
+                <span v-if="dayTime(day)" class="font-normal tabular-nums">{{
+                  formatDuration(dayTime(day))
+                }}</span>
               </p>
               <div class="space-y-1.5">
                 <p
@@ -136,11 +256,23 @@ const extras = (day: CalendarDay) => day.activities.filter((a) => !a.planned_wor
                 >
                   {{ race.priority }} race · {{ race.name }}
                 </p>
-                <WorkoutCard v-for="w in day.workouts" :key="w.id" :workout="w" compact />
+                <div
+                  v-for="w in day.workouts"
+                  :key="w.id"
+                  :draggable="movable(w)"
+                  :class="{
+                    'cursor-grab active:cursor-grabbing': movable(w),
+                    'opacity-40': dragging?.id === w.id,
+                  }"
+                  @dragstart="dragStart($event, w)"
+                  @dragend="dragEnd"
+                >
+                  <WorkoutCard :workout="w" compact />
+                </div>
                 <div
                   v-for="a in extras(day)"
                   :key="a.id"
-                  class="rounded-md bg-white px-2 py-1.5 text-xs ring-1 ring-dashed ring-slate-300"
+                  class="rounded-md bg-white px-2 py-1.5 text-xs ring-1 ring-slate-300 ring-dashed"
                 >
                   <SportBadge :sport="a.sport" />
                   <p class="mt-1 text-slate-700">
