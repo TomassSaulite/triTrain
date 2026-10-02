@@ -25,6 +25,7 @@ import type {
   StravaStatus,
   Threshold,
   ThresholdMetric,
+  ThresholdStatus,
   ThresholdSuggestion,
   User,
   WeekProgress,
@@ -67,7 +68,10 @@ export const athleteApi = {
 
 export const thresholdsApi = {
   current: () => unwrap(client.get<Data<Threshold[]>>('thresholds/current')),
-  history: (metric?: ThresholdMetric) => client.get<Paginated<Threshold>>('thresholds', { metric }),
+  history: (metric?: ThresholdMetric, perPage?: number) =>
+    client.get<Paginated<Threshold>>('thresholds', { metric, per_page: perPage }),
+  /** Every metric's age, whether it is due a retest, and how to test it. */
+  status: () => unwrap(client.get<Data<ThresholdStatus[]>>('thresholds/status')),
   record: (metric: ThresholdMetric, value: number, testedAt?: string) =>
     unwrap(client.post<Data<Threshold>>('thresholds', { metric, value, tested_at: testedAt })),
   remove: (id: number) => client.delete(`thresholds/${id}`),

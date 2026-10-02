@@ -94,6 +94,18 @@ export interface Threshold {
   created_at: string
 }
 
+export interface ThresholdStatus {
+  metric: ThresholdMetric
+  value: number | null
+  tested_at: string | null
+  source: ThresholdSource | null
+  age_days: number | null
+  /** 'due' when older than eight weeks. */
+  status: 'ok' | 'due' | 'missing'
+  /** How to test for a new value. */
+  protocol: string
+}
+
 export interface ThresholdSuggestion {
   id: number
   metric: ThresholdMetric

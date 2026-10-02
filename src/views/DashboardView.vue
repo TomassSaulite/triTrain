@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { activitiesApi, calendarApi, loadApi, plansApi, suggestionsApi } from '@/api'
+import { activitiesApi, calendarApi, loadApi, plansApi, suggestionsApi, thresholdsApi } from '@/api'
 import { ApiError } from '@/api/client'
 import type { Activity, CalendarDay, Plan, WeekProgress, WeeklyReview } from '@/api/types'
 import CoachNotes from '@/components/CoachNotes.vue'
 import SuggestionsCard from '@/components/SuggestionsCard.vue'
 import TakeBreakCard from '@/components/TakeBreakCard.vue'
 import WeeklyReviewCard from '@/components/WeeklyReviewCard.vue'
+import RetestCard from '@/components/RetestCard.vue'
 import RateRecentCard from '@/components/feel/RateRecentCard.vue'
 import WorkoutCard from '@/components/WorkoutCard.vue'
 import LoadChart from '@/components/charts/LoadChart.vue'
@@ -37,13 +38,14 @@ async function currentPlan(): Promise<Plan | null> {
 }
 
 const dashboard = useAsync(async () => {
-  const [plan, week, summary, series, suggestions, recent] = await Promise.all([
+  const [plan, week, summary, series, suggestions, recent, thresholds] = await Promise.all([
     currentPlan(),
     calendarApi.range(todayDate, addDays(todayDate, 6)),
     loadApi.summary(),
     loadApi.series(addDays(todayDate, -90), todayDate),
     suggestionsApi.pending(),
     activitiesApi.list({ from: addDays(todayDate, -(RATE_WITHIN_DAYS - 1)) }),
+    thresholdsApi.status(),
   ])
   const [progress, review]: [WeekProgress[], WeeklyReview | null] = plan
     ? await Promise.all([plansApi.progress(plan.id), plansApi.weeklyReview(plan.id)])
@@ -51,7 +53,7 @@ const dashboard = useAsync(async () => {
 
   const unrated = recent.data.filter((a) => !a.feedback)
 
-  return { plan, days: week.data, summary, series, suggestions, progress, review, unrated }
+  return { plan, days: week.data, summary, series, suggestions, progress, review, unrated, thresholds }
 })
 
 const todayEntry = computed<CalendarDay | undefined>(() => dashboard.data.value?.days[0])
@@ -138,6 +140,7 @@ function formLabel(tsb: number): string {
       </AppAlert>
       <WeeklyReviewCard v-if="showReview && review" :review="review" @dismiss="dismissReview" />
       <RateRecentCard :activities="dashboard.data.value.unrated" @rated="markRated" />
+      <RetestCard :statuses="dashboard.data.value.thresholds" />
       <CoachNotes :notes="dashboard.data.value.plan?.warnings ?? []" />
 
       <SuggestionsCard :suggestions="dashboard.data.value.suggestions" @resolved="removeSuggestion" />

@@ -8,6 +8,22 @@
   --color-strength: oklch(0.55 0.03 260);
 }
 
+/*
+ * Chart colours, shared by every chart. Slots 1, 2 and 7 of the validated
+ * reference palette; dark mode redefines them below.
+ */
+:root {
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #4a3aa7;
+  --chart-1-soft: #9cc0ec;
+  --chart-surface: #ffffff;
+  --chart-text: #334155;
+  --chart-muted: #64748b;
+  --chart-grid: #eef0f3;
+  --chart-axis: #cbd5e1;
+}
+
 @layer base {
   body {
     @apply bg-slate-50 text-slate-900 antialiased;
