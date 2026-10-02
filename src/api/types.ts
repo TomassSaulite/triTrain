@@ -1,0 +1,340 @@
+/**
+ * Types mirroring the TriTrain API's resources (see the API's docs/api.md).
+ * Dates are `YYYY-MM-DD`, timestamps ISO-8601, durations seconds, distances metres.
+ */
+
+export type Sport = 'swim' | 'bike' | 'run' | 'brick' | 'strength'
+export type Discipline = 'swim' | 'bike' | 'run'
+export type Experience = 'novice' | 'intermediate' | 'advanced'
+export type RaceDistance = 'sprint' | 'olympic' | 'half' | 'full'
+export type RacePriority = 'A' | 'B' | 'C'
+export type PlanStatus = 'active' | 'completed' | 'archived'
+export type PhaseType = 'base' | 'build' | 'peak' | 'taper'
+export type WorkoutKind =
+  'endurance' | 'tempo' | 'threshold' | 'vo2' | 'race_pace' | 'long' | 'recovery' | 'technique'
+export type WorkoutStatus = 'planned' | 'moved' | 'completed' | 'partial' | 'missed' | 'dropped'
+export type ActivitySource = 'strava' | 'health_connect' | 'fit' | 'manual'
+export type ThresholdMetric = 'ftp_w' | 'threshold_pace_s_per_km' | 'css_s_per_100m' | 'lthr'
+export type ThresholdSource = 'test' | 'estimated' | 'auto_detected'
+export type TssMethod = 'power' | 'pace' | 'heart_rate' | 'estimated' | 'provided'
+export type RevisionReason = 'generated' | 'regenerated' | 'adapted' | 'manual'
+export type SuggestionStatus = 'pending' | 'accepted' | 'dismissed'
+export type TargetMetric = 'ftp_pct' | 'threshold_pace_pct' | 'css_pct' | 'lthr_pct'
+export type StepType = 'warmup' | 'steady' | 'interval' | 'recovery' | 'rest' | 'cooldown' | 'repeat'
+
+/** ISO weekday: 1 = Monday ... 7 = Sunday. */
+export type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7
+
+export interface Data<T> {
+  data: T
+}
+
+export interface Paginated<T> {
+  data: T[]
+  meta: { current_page: number; last_page: number; per_page: number; total: number }
+}
+
+export interface User {
+  id: number
+  name: string
+  email: string
+  athlete?: Athlete | null
+}
+
+export interface AuthResponse {
+  token: string
+  user: User
+}
+
+export interface CoachPreferences {
+  long_ride_day: Weekday
+  long_run_day: Weekday | null
+  pool_days: Weekday[]
+  rest_days: Weekday[]
+  day_limits_minutes: Partial<Record<Weekday, number>>
+  recovery_week_every: number | null
+  max_ramp_rate: number
+  target_ctl: number | null
+  sport_share: Record<Discipline, number> | null
+  bricks: boolean
+}
+
+export interface Athlete {
+  id: number
+  timezone: string
+  birth_year: number | null
+  weight_kg: number | null
+  max_hr: number | null
+  experience: Experience
+  weekly_hours: number
+  weakest_sport: Discipline | null
+  preferences: CoachPreferences
+  updated_at: string
+}
+
+export interface AthleteInput {
+  timezone?: string
+  birth_year?: number | null
+  weight_kg?: number | null
+  max_hr?: number | null
+  experience?: Experience
+  weekly_hours?: number
+  weakest_sport?: Discipline | null
+  preferences?: Partial<CoachPreferences>
+}
+
+export interface Threshold {
+  id: number
+  sport: Sport | null
+  metric: ThresholdMetric
+  value: number
+  tested_at: string
+  source: ThresholdSource
+  created_at: string
+}
+
+export interface ThresholdSuggestion {
+  id: number
+  metric: ThresholdMetric
+  current_value: number | null
+  suggested_value: number
+  rationale: string
+  status: SuggestionStatus
+  activity_id: number | null
+  created_at: string
+  resolved_at: string | null
+}
+
+export interface Race {
+  id: number
+  name: string
+  distance: RaceDistance
+  date: string
+  priority: RacePriority
+  days_to_go: number
+}
+
+export interface RaceInput {
+  name: string
+  distance: RaceDistance
+  date: string
+  priority?: RacePriority
+}
+
+export interface AvailabilityOverride {
+  date: string
+  available_minutes: number
+  note: string | null
+}
+
+export interface PlanPhase {
+  type: PhaseType
+  start_date: string
+  end_date: string
+}
+
+export interface PlannedWorkout {
+  id: number
+  plan_id: number
+  parent_id: number | null
+  date: string
+  sport: Sport
+  kind: WorkoutKind
+  is_key: boolean
+  title: string
+  target_duration_s: number
+  target_distance_m: number | null
+  target_tss: number
+  status: WorkoutStatus
+  compliance: number | null
+  activity_id: number | null
+  template_id: number | null
+  children?: PlannedWorkout[]
+  activity?: Activity | null
+}
+
+export interface Target {
+  metric: TargetMetric
+  low: number
+  high: number
+}
+
+export interface ResolvedTarget {
+  unit: 'watts' | 'bpm' | 's_per_km' | 's_per_100m'
+  low: number
+  high: number
+}
+
+export interface Step {
+  type: Exclude<StepType, 'repeat'>
+  duration_s?: number
+  distance_m?: number
+  target?: Target
+  note?: string
+  resolved?: ResolvedTarget | null
+}
+
+export interface RepeatBlock {
+  type: 'repeat'
+  count: number
+  steps: StructureBlock[]
+}
+
+export type StructureBlock = Step | RepeatBlock
+
+export interface WorkoutStructure {
+  steps: StructureBlock[]
+}
+
+export interface PlannedWorkoutDetail extends PlannedWorkout {
+  structure: WorkoutStructure | null
+  resolved_structure: WorkoutStructure | null
+}
+
+export interface PlanWeek {
+  id: number
+  week_index: number
+  start_date: string
+  phase?: PhaseType
+  is_recovery: boolean
+  target_tss: number
+  target_hours: number
+  planned_tss?: number
+}
+
+export interface Plan {
+  id: number
+  status: PlanStatus
+  version: number
+  generator_version: string
+  start_date: string
+  starting_ctl: number
+  target_ctl: number
+  warnings: string[]
+  race?: Race
+  phases?: PlanPhase[]
+  weeks?: PlanWeek[]
+  created_at: string
+  updated_at: string
+}
+
+export interface PlanChange {
+  type: string
+  rule?: string
+  key?: string
+  reason?: string
+  workout_id?: number
+  date?: string
+  factor?: number
+  week_start?: string
+  from_tss?: number
+  to_tss?: number
+  from?: string
+  to?: string
+}
+
+export interface PlanRevision {
+  version: number
+  reason: RevisionReason
+  summary: string
+  changes: PlanChange[]
+  created_at: string
+}
+
+export interface WeekProgress {
+  week_index: number
+  start_date: string
+  phase: PhaseType
+  is_recovery: boolean
+  target_tss: number
+  planned: { tss: number; duration_s: number; sessions: number }
+  actual: { tss: number; duration_s: number; activities: number }
+  sessions: { completed: number; partial: number; missed: number; upcoming: number }
+  by_sport: Record<Discipline, { planned_duration_s: number; actual_duration_s: number }>
+  compliance: number | null
+}
+
+export interface Activity {
+  id: number
+  source: ActivitySource
+  external_id: string | null
+  sport: Sport
+  name: string | null
+  started_at: string
+  duration_s: number
+  distance_m: number | null
+  avg_hr: number | null
+  np_w: number | null
+  best_20min_power_w: number | null
+  avg_pace: number | null
+  tss: number | null
+  tss_method: TssMethod | null
+  intensity_factor: number | null
+  planned_workout_id?: number | null
+}
+
+export interface ActivityInput {
+  sport: Exclude<Sport, 'brick'>
+  name?: string | null
+  started_at: string
+  duration_s: number
+  distance_m?: number | null
+  avg_hr?: number | null
+  np_w?: number | null
+  avg_pace?: number | null
+  tss?: number | null
+}
+
+export interface DailyLoad {
+  date: string
+  tss: number
+  ctl: number
+  atl: number
+  tsb: number
+}
+
+export interface LoadSummary {
+  date: string
+  ctl: number
+  atl: number
+  tsb: number
+  ramp_7d: number
+  tss_7d: number
+  has_history: boolean
+}
+
+export interface CalendarDay {
+  date: string
+  workouts: PlannedWorkout[]
+  activities: Activity[]
+  races: Race[]
+}
+
+export interface Calendar {
+  data: CalendarDay[]
+  meta: { plan_id: number | null; plan_version: number | null; from: string; to: string }
+}
+
+export interface StravaStatus {
+  connected: boolean
+  strava_athlete_id: number | null
+  scope: string | null
+  connected_at: string | null
+}
+
+export interface WorkoutTemplate {
+  id: number
+  slug: string
+  name: string
+  description: string | null
+  sport: Sport
+  kind: WorkoutKind
+  phases: PhaseType[]
+  distances: RaceDistance[] | null
+  min_s: number
+  max_s: number
+  intensity_factor: number
+  structure: WorkoutStructure
+  is_system: boolean
+  is_active: boolean
+}
