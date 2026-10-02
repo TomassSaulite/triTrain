@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import AppField from '@/components/ui/AppField.vue'
 import type { ProfileDraft } from './profile'
 
 defineProps<{ errors?: Record<string, string | undefined> }>()
 const profile = defineModel<ProfileDraft>({ required: true })
 
-const timezones = Intl.supportedValuesOf('timeZone')
+// The browser's list leaves out "UTC"; keep it and whatever the athlete has selectable.
+const timezones = computed(() => [
+  ...new Set([profile.value.timezone, 'UTC', ...Intl.supportedValuesOf('timeZone')]),
+])
 
 const experiences = [
   { value: 'novice', label: 'Novice', hint: 'First season or first race at this distance' },
