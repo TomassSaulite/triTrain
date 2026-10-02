@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDialog } from '@/composables/useDialog'
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { plansApi, racesApi } from '@/api'
@@ -14,6 +15,7 @@ import { useForm } from '@/composables/useForm'
 import { addDays, nextSunday, formatDate, today } from '@/utils/dates'
 
 const router = useRouter()
+const { confirm } = useDialog()
 
 const page = useAsync(async () => {
   const [races, planRaceId] = await Promise.all([
@@ -70,18 +72,26 @@ async function save(): Promise<void> {
 
 async function remove(race: Race): Promise<void> {
   const drivesPlan = race.id === page.data.value?.planRaceId
-  const message = drivesPlan
-    ? `Delete ${race.name}? Its training plan is deleted too.`
-    : `Delete ${race.name}?`
-  if (!window.confirm(message)) return
+  const sure = await confirm({
+    title: `Delete ${race.name}?`,
+    message: drivesPlan ? 'Your plan for it is archived; its history stays.' : undefined,
+    confirmLabel: 'Delete',
+    danger: true,
+  })
+  if (!sure) return
   await submit(() => racesApi.remove(race.id))
   if (!error.value) await page.run()
 }
 
 async function buildPlan(race: Race): Promise<void> {
+  const replacing = page.data.value?.planRaceId
   if (
-    page.data.value?.planRaceId &&
-    !window.confirm('Build a new plan for this race? Your current plan will be archived.')
+    replacing &&
+    !(await confirm({
+      title: 'Build a new plan?',
+      message: 'Your current plan is archived; its history stays.',
+      confirmLabel: 'Build plan',
+    }))
   )
     return
   const plan = await submit(() => racesApi.createPlan(race.id))

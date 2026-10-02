@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDialog } from '@/composables/useDialog'
 import { reactive, ref, watch } from 'vue'
 import { activitiesApi } from '@/api'
 import type { Activity, ActivityInput, Sport } from '@/api/types'
@@ -13,6 +14,7 @@ import { useForm } from '@/composables/useForm'
 import { formatDateTime } from '@/utils/dates'
 import { formatClock, formatDistance, formatDuration, formatTss, parseClock, titleCase } from '@/utils/format'
 
+const { confirm } = useDialog()
 const sport = ref<string>('')
 const page = ref(1)
 
@@ -79,7 +81,13 @@ async function log(): Promise<void> {
 }
 
 async function remove(activity: Activity): Promise<void> {
-  if (!window.confirm('Delete this activity? Your fitness numbers are recalculated without it.')) return
+  const sure = await confirm({
+    title: 'Delete this activity?',
+    message: 'Your fitness numbers are recalculated without it.',
+    confirmLabel: 'Delete',
+    danger: true,
+  })
+  if (!sure) return
   await submit(() => activitiesApi.remove(activity.id))
   if (!error.value) await list.run()
 }

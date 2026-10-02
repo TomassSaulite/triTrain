@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDialog } from '@/composables/useDialog'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { plansApi } from '@/api'
@@ -15,6 +16,7 @@ import { daysBetween, formatDate, formatDateTime, startOfWeek, today } from '@/u
 import { formatDuration, formatPercent, formatTss } from '@/utils/format'
 
 const router = useRouter()
+const { confirm, prompt } = useDialog()
 
 const page = useAsync(async () => {
   let plan
@@ -67,15 +69,28 @@ const weeks = computed<WeekProgress[]>(() => {
 })
 
 async function regenerate(): Promise<void> {
-  const reason = window.prompt('Re-plan from today. Anything to note on why?', 'Re-planned on request.')
+  const reason = await prompt({
+    title: 'Re-plan from today?',
+    message:
+      'Upcoming sessions are rebuilt with your current fitness, thresholds and settings. Completed training stays.',
+    label: 'Why (shown in the change log)',
+    defaultValue: 'Re-planned on request.',
+    confirmLabel: 'Re-plan',
+  })
   if (reason === null || !plan.value) return
   const done = await submit(() => plansApi.regenerate(plan.value!.id, reason || undefined))
   if (done) await page.run()
 }
 
 async function archive(): Promise<void> {
-  if (!plan.value || !window.confirm('Archive this plan? Its calendar will be cleared; history stays.'))
-    return
+  if (!plan.value) return
+  const archiveIt = await confirm({
+    title: 'Archive this plan?',
+    message: 'Its upcoming sessions leave your calendar; the history stays.',
+    confirmLabel: 'Archive',
+    danger: true,
+  })
+  if (!archiveIt) return
   const done = await submit(() => plansApi.archive(plan.value!.id))
   if (done) await page.run()
 }

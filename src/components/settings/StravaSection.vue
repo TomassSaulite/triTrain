@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDialog } from '@/composables/useDialog'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { stravaApi } from '@/api'
@@ -11,6 +12,7 @@ import { errorMessage } from '@/composables/useAsync'
 import { formatDateTime } from '@/utils/dates'
 
 const route = useRoute()
+const { confirm } = useDialog()
 const status = useAsync(() => stravaApi.status())
 const busy = ref(false)
 const error = ref<string | null>(null)
@@ -41,7 +43,15 @@ async function connect(): Promise<void> {
 }
 
 async function disconnect(): Promise<void> {
-  if (!window.confirm('Disconnect Strava? Imported activities stay.')) return
+  if (
+    !(await confirm({
+      title: 'Disconnect Strava?',
+      message: 'Activities already imported stay.',
+      confirmLabel: 'Disconnect',
+      danger: true,
+    }))
+  )
+    return
   busy.value = true
 
   try {

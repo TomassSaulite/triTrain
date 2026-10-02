@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDialog } from '@/composables/useDialog'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { workoutsApi } from '@/api'
@@ -19,6 +20,7 @@ import { isOpenStatus } from '@/utils/sports'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
+const { confirm } = useDialog()
 
 const workout = useAsync(() => workoutsApi.get(Number(props.id)))
 const { submitting, error, submit } = useForm()
@@ -41,7 +43,14 @@ async function move(): Promise<void> {
 }
 
 async function skip(): Promise<void> {
-  if (!window.confirm('Skip this workout? The coach will not reschedule it.')) return
+  if (
+    !(await confirm({
+      title: 'Skip this workout?',
+      message: 'The coach will not reschedule it.',
+      confirmLabel: 'Skip it',
+    }))
+  )
+    return
   const updated = await submit(() => workoutsApi.skip(Number(props.id)))
   if (updated) workout.data.value = updated
 }
