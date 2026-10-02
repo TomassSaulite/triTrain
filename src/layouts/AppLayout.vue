@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useOnline } from '@/composables/useOnline'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
+
+const online = useOnline()
 
 const ACTIVE = 'border-indigo-600! text-indigo-700!'
 
@@ -47,7 +50,7 @@ async function logout(): Promise<void> {
 
 <template>
   <div class="min-h-screen pb-20 md:pb-0">
-    <header class="border-b border-slate-200 bg-white">
+    <header class="border-b border-slate-200 bg-white pt-[env(safe-area-inset-top)]">
       <div class="mx-auto flex max-w-6xl items-center gap-6 px-4">
         <RouterLink :to="{ name: 'dashboard' }" class="py-3 text-lg font-bold tracking-tight text-indigo-700">
           TriTrain
@@ -69,6 +72,10 @@ async function logout(): Promise<void> {
         </button>
       </div>
     </header>
+
+    <p v-if="!online" role="status" class="bg-slate-800 px-4 py-2 text-center text-sm text-white">
+      You're offline. Your plan will update when you're back online.
+    </p>
 
     <main class="mx-auto max-w-6xl px-4 py-6">
       <RouterView />

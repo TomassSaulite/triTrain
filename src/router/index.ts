@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteLocationRaw } from 'vue-router'
 import { onUnauthorized } from '@/api'
+import { ApiError } from '@/api/client'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 
@@ -84,7 +85,9 @@ router.beforeEach(async (to): Promise<RouteLocationRaw | true> => {
 
   try {
     await auth.ensureUser()
-  } catch {
+  } catch (e) {
+    // Signed out only when the API rejects the token; a lost connection keeps the session.
+    if (!(e instanceof ApiError && e.status === 401)) return true
     await auth.logout(false)
 
     return { name: 'login' }

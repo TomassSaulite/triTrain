@@ -1,7 +1,8 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { auth as authApi } from '@/api'
-import { tokenStorage } from '@/api/token'
+import { ApiError } from '@/api/client'
+import { tokenStorage, userStorage } from '@/api/token'
 import type { User } from '@/api/types'
 import { router } from './index'
 
@@ -47,11 +48,23 @@ describe('router guards', () => {
   it('signs out when the stored token no longer works', async () => {
     tokenStorage.set('stale')
     setActivePinia(createPinia())
-    vi.spyOn(authApi, 'me').mockRejectedValue(new Error('Unauthenticated.'))
+    vi.spyOn(authApi, 'me').mockRejectedValue(new ApiError(401, 'Unauthenticated.'))
 
     await router.push('/plan')
 
     expect(router.currentRoute.value.name).toBe('login')
     expect(tokenStorage.get()).toBeNull()
+  })
+
+  it('keeps the athlete signed in without a connection, using the last known profile', async () => {
+    tokenStorage.set('token')
+    userStorage.set({ id: 1, name: 'A', email: 'a@b.c', athlete })
+    setActivePinia(createPinia())
+    vi.spyOn(authApi, 'me').mockRejectedValue(new TypeError('Failed to fetch'))
+
+    await router.push('/plan')
+
+    expect(router.currentRoute.value.name).toBe('plan')
+    expect(tokenStorage.get()).toBe('token')
   })
 })

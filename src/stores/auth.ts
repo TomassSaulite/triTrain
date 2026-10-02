@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { auth as authApi } from '@/api'
-import { tokenStorage } from '@/api/token'
+import { ApiError } from '@/api/client'
+import { tokenStorage, userStorage } from '@/api/token'
 import type { Athlete, AuthResponse, User } from '@/api/types'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -11,10 +12,15 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => token.value !== null)
   const athlete = computed(() => user.value?.athlete ?? null)
 
+  function setUser(value: User): void {
+    user.value = value
+    userStorage.set(value)
+  }
+
   function start(response: AuthResponse): void {
     tokenStorage.set(response.token)
     token.value = response.token
-    user.value = response.user
+    setUser(response.user)
   }
 
   async function login(email: string, password: string): Promise<void> {
@@ -30,16 +36,26 @@ export const useAuthStore = defineStore('auth', () => {
     start(await authApi.register(input))
   }
 
-  /** Loads the signed-in user once per page load. */
+  /**
+   * Loads the signed-in user once per page load. Without a connection the last
+   * known profile is used, so the installed app opens offline; only a rejected
+   * token (401) is an error.
+   */
   async function ensureUser(): Promise<void> {
-    if (token.value && !user.value) {
-      user.value = await authApi.me()
+    if (!token.value || user.value) return
+
+    try {
+      setUser(await authApi.me())
+    } catch (e) {
+      const cached = userStorage.get()
+      if ((e instanceof ApiError && e.status === 401) || !cached) throw e
+      user.value = cached
     }
   }
 
   function setAthlete(value: Athlete): void {
     if (user.value) {
-      user.value = { ...user.value, athlete: value }
+      setUser({ ...user.value, athlete: value })
     }
   }
 
@@ -50,6 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     tokenStorage.clear()
+    userStorage.clear()
     token.value = null
     user.value = null
   }

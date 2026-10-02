@@ -53,6 +53,19 @@ npm run dev                  # http://localhost:5173
 To connect Strava from the web app, set `STRAVA_APP_RETURN_URL` in the API's `.env` to this
 app's settings page, e.g. `http://localhost:5173/settings`.
 
+### Installing it on a phone
+
+The production build (`npm run build`) is an installable web app: a manifest, icons and a
+service worker that caches the app itself (never training data, which always comes fresh from
+the API). Once it is served over HTTPS:
+
+- **Android (Chrome):** open the site, then *Install app* from the menu or the install prompt.
+- **iPhone (Safari):** tap *Share*, then *Add to Home Screen*.
+
+It then opens full screen from the home screen, starts instantly, and still opens without a
+connection, asking to reconnect for fresh data. A new version waits until you tap *Reload*.
+The icon's source is `assets/icon.svg`.
+
 ## Scripts
 
 | Command | What it does |
