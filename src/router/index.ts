@@ -43,6 +43,12 @@ export const router = createRouter({
         },
         { path: 'plan', name: 'plan', component: () => import('@/views/PlanView.vue') },
         { path: 'races', name: 'races', component: () => import('@/views/RacesView.vue') },
+        {
+          path: 'races/:id/strategy',
+          name: 'race-strategy',
+          component: () => import('@/views/RaceStrategyView.vue'),
+          props: true,
+        },
         { path: 'activities', name: 'activities', component: () => import('@/views/ActivitiesView.vue') },
         { path: 'library', name: 'library', component: () => import('@/views/LibraryView.vue') },
         {

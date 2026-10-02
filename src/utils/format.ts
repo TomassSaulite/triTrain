@@ -11,6 +11,21 @@ export function formatDuration(seconds: number): string {
   return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')}`
 }
 
+/** A race time: "5:14:58", or "58:30" under an hour. */
+export function formatRaceTime(seconds: number): string {
+  const rounded = Math.round(seconds)
+  const hours = Math.floor(rounded / 3600)
+
+  return hours > 0 ? `${hours}:${formatClock(rounded % 3600).padStart(5, '0')}` : formatClock(rounded)
+}
+
+/** One pacing value: "189 W", "5:09 /km", "1:51 /100m". */
+export function formatPacing(unit: 'watts' | 's_per_km' | 's_per_100m', value: number): string {
+  return unit === 'watts'
+    ? `${Math.round(value)} W`
+    : `${formatClock(value)} ${unit === 's_per_km' ? '/km' : '/100m'}`
+}
+
 /** "4:05" for 245 seconds. */
 export function formatClock(seconds: number): string {
   const rounded = Math.round(seconds)

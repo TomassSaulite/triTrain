@@ -4,6 +4,8 @@ import {
   formatClock,
   formatDistance,
   formatDuration,
+  formatPacing,
+  formatRaceTime,
   formatRelativeTarget,
   formatResolvedTarget,
   formatThreshold,
@@ -56,5 +58,16 @@ describe('dates', () => {
   it('finds the next Sunday for default race dates', () => {
     expect(nextSunday('2026-10-02')).toBe('2026-10-04')
     expect(nextSunday('2026-10-04')).toBe('2026-10-04')
+  })
+})
+
+describe('race formatting', () => {
+  it('formats race times and pacing values', () => {
+    expect(formatRaceTime(18898)).toBe('5:14:58')
+    expect(formatRaceTime(3605)).toBe('1:00:05')
+    expect(formatRaceTime(1500)).toBe('25:00')
+    expect(formatPacing('watts', 189.4)).toBe('189 W')
+    expect(formatPacing('s_per_km', 309)).toBe('5:09 /km')
+    expect(formatPacing('s_per_100m', 111)).toBe('1:51 /100m')
   })
 })

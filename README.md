@@ -23,6 +23,9 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
   the "what changed and why" log.
 - **Races**: A, B and C races, including running races inside a triathlon plan; build a plan
   from an A race.
+- **Race plan**: for every race, what to hold on each leg (pace or power, from your
+  thresholds), predicted splits and finish time, and how to fuel before and during. Reached from
+  the race list and the dashboard countdown.
 - **Activities**: history, manual logging, and how each session was scored.
 - **Workouts**: the library the coach builds plans from. Browse and inspect every workout,
   and build your own (or copy and adapt one) with a step editor. Your workouts are preferred

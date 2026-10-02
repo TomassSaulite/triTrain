@@ -26,6 +26,7 @@ const secondary = [
 const section = computed(() => {
   const name = String(route.name ?? '')
   if (name === 'workout') return 'calendar'
+  if (name === 'race-strategy') return 'races'
   if (name.startsWith('template')) return 'library'
 
   return name

@@ -98,10 +98,17 @@ function formLabel(tsb: number): string {
             · week {{ focus.week }} of {{ focus.weeksInPhase }}. {{ focus.message }}
           </p>
         </div>
-        <p v-if="race" class="text-sm text-slate-600">
+        <RouterLink
+          v-if="race"
+          :to="{ name: 'race-strategy', params: { id: race.id } }"
+          class="group text-sm text-slate-600"
+        >
           <span class="text-2xl font-semibold text-slate-900 tabular-nums">{{ race.days_to_go }}</span>
           days to {{ race.name }}
-        </p>
+          <span class="block text-right text-xs font-medium text-indigo-600 group-hover:underline"
+            >Race plan →</span
+          >
+        </RouterLink>
       </header>
 
       <AppAlert v-if="!dashboard.data.value.plan" tone="info">

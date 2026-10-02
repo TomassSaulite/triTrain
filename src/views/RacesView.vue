@@ -175,6 +175,12 @@ async function buildPlan(race: Race): Promise<void> {
               >
                 Build plan
               </AppButton>
+              <RouterLink
+                :to="{ name: 'race-strategy', params: { id: race.id } }"
+                class="rounded-md px-2.5 py-1.5 text-sm font-medium text-indigo-700 ring-1 ring-indigo-200 ring-inset hover:bg-indigo-50"
+              >
+                Race plan
+              </RouterLink>
               <AppButton size="sm" variant="secondary" @click="startEdit(race)">Edit</AppButton>
               <AppButton size="sm" variant="ghost" @click="remove(race)">Delete</AppButton>
             </div>

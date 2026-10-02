@@ -255,6 +255,31 @@ export interface WeekProgress {
   compliance: number | null
 }
 
+export interface RaceLegPlan {
+  sport: Sport
+  distance_m: number
+  /** Null when the athlete has no threshold for this sport. */
+  target: {
+    unit: 'watts' | 's_per_km' | 's_per_100m'
+    easy: number
+    hard: number
+    target: number
+    intensity: number
+  } | null
+  predicted_s: number | null
+  advice: string
+}
+
+export interface RaceStrategy {
+  legs: RaceLegPlan[]
+  transitions_s: number
+  /** Null unless every leg could be predicted. */
+  finish_s: number | null
+  fueling: { before: string[]; during: string[] }
+  /** What the athlete could add for a fuller plan. */
+  missing: string[]
+}
+
 export type ReviewVerdict = 'on_track' | 'keys_missed' | 'under' | 'over' | 'rest'
 
 export interface WeeklyReview {

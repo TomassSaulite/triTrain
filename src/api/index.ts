@@ -17,6 +17,7 @@ import type {
   PlanRevision,
   Race,
   RaceInput,
+  RaceStrategy,
   StravaStatus,
   Threshold,
   ThresholdMetric,
@@ -82,6 +83,8 @@ export const racesApi = {
   update: (id: number, input: Partial<RaceInput>) => unwrap(client.patch<Data<Race>>(`races/${id}`, input)),
   remove: (id: number) => client.delete(`races/${id}`),
   createPlan: (id: number) => unwrap(client.post<Data<Plan>>(`races/${id}/plan`)),
+  get: (id: number) => unwrap(client.get<Data<Race>>(`races/${id}`)),
+  strategy: (id: number) => unwrap(client.get<Data<RaceStrategy>>(`races/${id}/strategy`)),
 }
 
 export const availabilityApi = {
