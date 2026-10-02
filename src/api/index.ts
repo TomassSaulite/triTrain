@@ -8,6 +8,8 @@ import type {
   AuthResponse,
   AvailabilityOverride,
   Calendar,
+  CoachConversation,
+  CoachMessage,
   DailyLoad,
   FeedbackEntry,
   Data,
@@ -148,6 +150,13 @@ export const activitiesApi = {
   rate: (id: number, input: SessionFeedbackInput) =>
     client.put<{ data: SessionFeedback; plan_change: string | null }>(`activities/${id}/feedback`, input),
   unrate: (id: number) => client.delete(`activities/${id}/feedback`),
+}
+
+export const coachApi = {
+  conversation: () => client.get<CoachConversation>('coach/messages'),
+  ask: (message: string) =>
+    unwrap(client.post<Data<{ question: CoachMessage; reply: CoachMessage }>>('coach/messages', { message })),
+  clear: () => client.delete('coach/messages'),
 }
 
 export const feedbackApi = {
