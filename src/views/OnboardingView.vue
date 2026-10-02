@@ -99,7 +99,7 @@ async function finish(withRace: boolean): Promise<void> {
       />
     </ol>
 
-    <section class="mt-6 rounded-lg bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <section class="mt-6 rounded-lg bg-surface p-6 shadow-sm ring-1 ring-slate-200">
       <h1 class="text-xl font-semibold">{{ steps[step].title }}</h1>
       <p class="mt-1 mb-5 text-sm text-slate-600">{{ steps[step].intro }}</p>
 

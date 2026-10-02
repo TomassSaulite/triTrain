@@ -21,7 +21,7 @@ defineProps<{ blocks: StructureBlock[] }>()
       </div>
       <div
         v-else
-        class="flex flex-wrap items-baseline justify-between gap-x-3 rounded-md bg-white px-3 py-2 ring-1 ring-slate-200"
+        class="flex flex-wrap items-baseline justify-between gap-x-3 rounded-md bg-surface px-3 py-2 ring-1 ring-slate-200"
       >
         <p class="text-sm">
           <span class="font-medium">{{ titleCase(block.type) }}</span>

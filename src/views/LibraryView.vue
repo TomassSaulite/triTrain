@@ -79,7 +79,7 @@ async function remove(template: WorkoutTemplate): Promise<void> {
           :class="
             sport === s.value
               ? 'bg-indigo-600 text-white ring-indigo-600'
-              : 'bg-white text-slate-700 ring-slate-300'
+              : 'bg-surface text-slate-700 ring-slate-300'
           "
           :aria-pressed="sport === s.value"
           @click="sport = s.value as Discipline | ''"
@@ -105,7 +105,7 @@ async function remove(template: WorkoutTemplate): Promise<void> {
           <li v-for="t in templates" :key="t.id">
             <button
               type="button"
-              class="w-full rounded-md bg-white px-3 py-2 text-left shadow-xs ring-1 transition"
+              class="w-full rounded-md bg-surface px-3 py-2 text-left shadow-xs ring-1 transition"
               :class="selectedId === t.id ? 'ring-2 ring-indigo-600' : 'ring-slate-200 hover:ring-indigo-300'"
               :aria-pressed="selectedId === t.id"
               @click="selectedId = t.id"

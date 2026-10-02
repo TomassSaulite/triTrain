@@ -260,7 +260,7 @@ const summary = computed(() =>
 
       <div
         v-if="hovered"
-        class="pointer-events-none absolute top-8 w-40 rounded-md bg-white px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
+        class="pointer-events-none absolute top-8 w-40 rounded-md bg-surface px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
         :style="{ left: `${tooltipLeft}px` }"
       >
         <p class="font-medium text-slate-900">{{ formatDate(hovered.date) }}</p>
@@ -279,7 +279,7 @@ const summary = computed(() =>
 
     <div v-else class="max-h-72 overflow-y-auto">
       <table class="w-full text-sm">
-        <thead class="sticky top-0 bg-white text-left text-xs text-slate-500">
+        <thead class="sticky top-0 bg-surface text-left text-xs text-slate-500">
           <tr>
             <th class="py-1 font-medium">Date</th>
             <th class="py-1 text-right font-medium">Load</th>
@@ -304,14 +304,14 @@ const summary = computed(() =>
 
 <style scoped>
 .load-chart {
-  /* Categorical slots 1, 2 and 7 of the validated reference palette (light). */
-  --ctl: #2a78d6;
-  --atl: #eb6834;
-  --tsb: #4a3aa7;
-  --surface: #ffffff;
-  --text: #334155;
-  --muted: #64748b;
-  --grid: #eef0f3;
-  --axis: #cbd5e1;
+  /* Categorical slots 1, 2 and 7 of the validated reference palette; dark steps come from the theme. */
+  --ctl: var(--chart-1);
+  --atl: var(--chart-2);
+  --tsb: var(--chart-3);
+  --surface: var(--chart-surface);
+  --text: var(--chart-text);
+  --muted: var(--chart-muted);
+  --grid: var(--chart-grid);
+  --axis: var(--chart-axis);
 }
 </style>

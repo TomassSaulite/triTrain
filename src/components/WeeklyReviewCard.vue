@@ -35,7 +35,7 @@ const feel = computed(() =>
 
 <template>
   <section
-    class="min-w-0 rounded-lg bg-white p-4 shadow-xs ring-1 ring-slate-200 sm:p-5"
+    class="min-w-0 rounded-lg bg-surface p-4 shadow-xs ring-1 ring-slate-200 sm:p-5"
     aria-labelledby="weekly-review-title"
   >
     <header class="flex flex-wrap items-center gap-x-3 gap-y-1">

@@ -46,7 +46,7 @@ function toggle(day: Weekday): void {
         :class="
           selected.includes(day.value)
             ? 'bg-indigo-600 text-white ring-indigo-600'
-            : 'bg-white text-slate-700 ring-slate-300 hover:bg-slate-50'
+            : 'bg-surface text-slate-700 ring-slate-300 hover:bg-slate-50'
         "
         @click="toggle(day.value)"
       >
@@ -60,7 +60,7 @@ function toggle(day: Weekday): void {
         :class="
           model === null
             ? 'bg-indigo-600 text-white ring-indigo-600'
-            : 'bg-white text-slate-700 ring-slate-300'
+            : 'bg-surface text-slate-700 ring-slate-300'
         "
         @click="model = null"
       >

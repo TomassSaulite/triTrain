@@ -149,7 +149,7 @@ async function drop(date: string): Promise<void> {
             :class="
               (weeks === 4) === (option.value === 'month')
                 ? 'bg-indigo-600 text-white'
-                : 'bg-white text-slate-700'
+                : 'bg-surface text-slate-700'
             "
             :aria-pressed="(weeks === 4) === (option.value === 'month')"
             @click="go({ view: option.value })"
@@ -192,7 +192,7 @@ async function drop(date: string): Promise<void> {
           :key="day.date"
           class="rounded-lg p-3"
           :class="
-            day.date === today() ? 'bg-indigo-50 ring-1 ring-indigo-300' : 'bg-white ring-1 ring-slate-200'
+            day.date === today() ? 'bg-indigo-50 ring-1 ring-indigo-300' : 'bg-surface ring-1 ring-slate-200'
           "
         >
           <p class="mb-2 flex justify-between text-sm font-medium">
@@ -270,7 +270,7 @@ async function drop(date: string): Promise<void> {
               <div class="space-y-1.5">
                 <p
                   v-if="availabilityLabel(day)"
-                  class="rounded-md bg-white/70 px-2 py-1 text-xs text-slate-600 ring-1 ring-slate-200"
+                  class="rounded-md bg-surface/70 px-2 py-1 text-xs text-slate-600 ring-1 ring-slate-200"
                 >
                   {{ availabilityLabel(day) }}
                 </p>
@@ -297,7 +297,7 @@ async function drop(date: string): Promise<void> {
                 <div
                   v-for="a in extras(day)"
                   :key="a.id"
-                  class="rounded-md bg-white px-2 py-1.5 text-xs ring-1 ring-slate-300 ring-dashed"
+                  class="rounded-md bg-surface px-2 py-1.5 text-xs ring-1 ring-slate-300 ring-dashed"
                 >
                   <SportBadge :sport="a.sport" />
                   <p class="mt-1 text-slate-700">

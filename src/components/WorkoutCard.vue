@@ -10,7 +10,7 @@ defineProps<{ workout: PlannedWorkout; compact?: boolean }>()
 <template>
   <RouterLink
     :to="{ name: 'workout', params: { id: workout.id } }"
-    class="block rounded-md border-l-4 bg-white px-3 py-2 shadow-xs ring-1 ring-slate-200 transition hover:ring-indigo-300"
+    class="block rounded-md border-l-4 bg-surface px-3 py-2 shadow-xs ring-1 ring-slate-200 transition hover:ring-indigo-300"
     :class="{ 'opacity-60': workout.status === 'dropped' }"
     :style="{ borderLeftColor: `var(--color-${workout.sport})` }"
   >

@@ -167,7 +167,7 @@ const summary = computed(() => {
     </svg>
     <div
       v-if="hovered"
-      class="pointer-events-none absolute top-6 w-40 rounded-md bg-white px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
+      class="pointer-events-none absolute top-6 w-40 rounded-md bg-surface px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
       :style="{ left: `${tooltipLeft}px` }"
     >
       <p class="font-medium text-slate-900">{{ formatThreshold(metric, hovered.value) }}</p>

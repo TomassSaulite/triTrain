@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppearanceSection from '@/components/settings/AppearanceSection.vue'
 import AvailabilitySection from '@/components/settings/AvailabilitySection.vue'
 import CalendarSection from '@/components/settings/CalendarSection.vue'
 import CoachSection from '@/components/settings/CoachSection.vue'
@@ -13,6 +14,7 @@ const sections = [
   { id: 'availability', label: 'Travel and busy days' },
   { id: 'strava', label: 'Strava' },
   { id: 'calendar', label: 'Your calendar' },
+  { id: 'appearance', label: 'Appearance' },
 ]
 </script>
 
@@ -37,6 +39,7 @@ const sections = [
       <AvailabilitySection />
       <StravaSection />
       <CalendarSection />
+      <AppearanceSection />
     </div>
   </div>
 </template>

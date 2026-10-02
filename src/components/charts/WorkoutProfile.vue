@@ -51,7 +51,7 @@ const bars = computed(() => {
         x2="100"
         :y1="HEIGHT - HEIGHT / 1.2"
         :y2="HEIGHT - HEIGHT / 1.2"
-        stroke="#cbd5e1"
+        stroke="var(--chart-axis)"
         stroke-dasharray="1 1"
         vector-effect="non-scaling-stroke"
       />

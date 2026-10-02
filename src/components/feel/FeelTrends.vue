@@ -230,7 +230,7 @@ const describe = (key: Measure, value: number | null) =>
 
       <div
         v-if="hovered"
-        class="pointer-events-none absolute top-6 w-52 rounded-md bg-white px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
+        class="pointer-events-none absolute top-6 w-52 rounded-md bg-surface px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
         :style="{ left: `${tooltipLeft}px` }"
       >
         <p class="font-medium text-slate-900">
@@ -251,7 +251,7 @@ const describe = (key: Measure, value: number | null) =>
 
     <div v-else class="max-h-80 overflow-auto">
       <table class="w-full text-sm">
-        <thead class="sticky top-0 bg-white text-left text-xs text-slate-500">
+        <thead class="sticky top-0 bg-surface text-left text-xs text-slate-500">
           <tr>
             <th class="py-1 font-medium">Date</th>
             <th class="py-1 font-medium">Session</th>
@@ -276,13 +276,13 @@ const describe = (key: Measure, value: number | null) =>
 
 <style scoped>
 .feel-trends {
-  /* Slot 1 of the validated reference palette (light): one measure per chart. */
-  --line: #2a78d6;
-  --dot: #9cc0ec;
-  --surface: #ffffff;
-  --text: #334155;
-  --muted: #64748b;
-  --grid: #eef0f3;
-  --axis: #cbd5e1;
+  /* Slot 1 of the validated reference palette: one measure per chart. Dark steps come from the theme. */
+  --line: var(--chart-1);
+  --dot: var(--chart-1-soft);
+  --surface: var(--chart-surface);
+  --text: var(--chart-text);
+  --muted: var(--chart-muted);
+  --grid: var(--chart-grid);
+  --axis: var(--chart-axis);
 }
 </style>

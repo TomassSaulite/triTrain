@@ -21,7 +21,7 @@ function saved(activity: Activity, feedback: SessionFeedback): void {
 <template>
   <section
     v-if="activities.length"
-    class="min-w-0 rounded-lg bg-white p-4 shadow-xs ring-1 ring-slate-200 sm:p-5"
+    class="min-w-0 rounded-lg bg-surface p-4 shadow-xs ring-1 ring-slate-200 sm:p-5"
     aria-labelledby="rate-recent-title"
   >
     <h2 id="rate-recent-title" class="text-base font-semibold text-slate-900">How did it feel?</h2>

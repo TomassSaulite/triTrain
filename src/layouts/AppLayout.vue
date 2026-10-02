@@ -50,7 +50,7 @@ async function logout(): Promise<void> {
 
 <template>
   <div class="min-h-screen pb-20 md:pb-0">
-    <header class="border-b border-slate-200 bg-white pt-[env(safe-area-inset-top)]">
+    <header class="border-b border-slate-200 bg-surface pt-[env(safe-area-inset-top)]">
       <div class="mx-auto flex max-w-6xl items-center gap-6 px-4">
         <RouterLink :to="{ name: 'dashboard' }" class="py-3 text-lg font-bold tracking-tight text-indigo-700">
           TriTrain
@@ -73,7 +73,7 @@ async function logout(): Promise<void> {
       </div>
     </header>
 
-    <p v-if="!online" role="status" class="bg-slate-800 px-4 py-2 text-center text-sm text-white">
+    <p v-if="!online" role="status" class="bg-toast px-4 py-2 text-center text-sm text-white">
       You're offline. Your plan will update when you're back online.
     </p>
 
@@ -83,13 +83,13 @@ async function logout(): Promise<void> {
 
     <!-- Phone navigation: the four daily sections as tabs, the rest under "More". -->
     <nav
-      class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
       aria-label="Main"
     >
       <div
         v-if="moreOpen"
         id="more-menu"
-        class="absolute right-2 bottom-full mb-2 w-48 overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-slate-200"
+        class="absolute right-2 bottom-full mb-2 w-48 overflow-hidden rounded-lg bg-surface shadow-lg ring-1 ring-slate-200"
       >
         <RouterLink
           v-for="link in secondary"

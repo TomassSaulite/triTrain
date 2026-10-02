@@ -2,9 +2,9 @@
 import { dismissToast, toasts, type Toast } from '@/composables/useToast'
 
 const tones = {
-  success: 'bg-slate-900 text-white',
-  info: 'bg-slate-900 text-white',
-  error: 'bg-rose-700 text-white',
+  success: 'bg-toast text-white ring-1 ring-white/10',
+  info: 'bg-toast text-white ring-1 ring-white/10',
+  error: 'bg-rose-600 text-white',
 }
 
 async function act(toast: Toast): Promise<void> {

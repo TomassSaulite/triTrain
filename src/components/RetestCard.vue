@@ -44,7 +44,7 @@ const reason = (s: ThresholdStatus) =>
     <article
       v-for="s in prompts"
       :key="s.metric"
-      class="rounded-lg bg-white p-4 shadow-xs ring-1 ring-slate-200"
+      class="rounded-lg bg-surface p-4 shadow-xs ring-1 ring-slate-200"
     >
       <div class="flex flex-wrap items-start justify-between gap-2">
         <div class="min-w-0">

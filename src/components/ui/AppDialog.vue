@@ -32,7 +32,7 @@ watch(
   <dialog
     ref="element"
     :aria-labelledby="titleId"
-    class="m-auto w-[min(28rem,calc(100%-2rem))] rounded-lg bg-white p-0 shadow-xl ring-1 ring-slate-200 backdrop:bg-slate-900/40"
+    class="m-auto w-[min(28rem,calc(100%-2rem))] rounded-lg bg-surface p-0 shadow-xl ring-1 ring-slate-200 backdrop:bg-slate-900/40"
     @cancel.prevent="settleDialog(false)"
   >
     <form v-if="dialogState.open" method="dialog" class="space-y-4 p-5" @submit.prevent="settleDialog(true)">

@@ -12,7 +12,7 @@ withDefaults(
 
 const variants = {
   primary: 'bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600',
-  secondary: 'bg-white text-slate-800 ring-1 ring-slate-300 ring-inset hover:bg-slate-50',
+  secondary: 'bg-surface text-slate-800 ring-1 ring-slate-300 ring-inset hover:bg-slate-50',
   danger: 'bg-rose-600 text-white hover:bg-rose-500 focus-visible:outline-rose-600',
   ghost: 'text-slate-700 hover:bg-slate-100',
 }

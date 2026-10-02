@@ -11,7 +11,7 @@ const control = 'rounded-md px-2 py-1.5 text-sm ring-1 ring-slate-300'
 
 <template>
   <div
-    class="flex flex-wrap items-center gap-2 rounded-md bg-white p-2 ring-1 ring-slate-200"
+    class="flex flex-wrap items-center gap-2 rounded-md bg-surface p-2 ring-1 ring-slate-200"
     role="group"
     :aria-label="label"
   >

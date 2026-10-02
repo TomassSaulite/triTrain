@@ -150,7 +150,9 @@ async function skip(): Promise<void> {
         </p>
       </header>
 
-      <dl class="grid grid-cols-3 gap-3 rounded-lg bg-white p-4 text-center shadow-xs ring-1 ring-slate-200">
+      <dl
+        class="grid grid-cols-3 gap-3 rounded-lg bg-surface p-4 text-center shadow-xs ring-1 ring-slate-200"
+      >
         <div>
           <dt class="text-xs text-slate-500">Duration</dt>
           <dd class="text-lg font-semibold">{{ formatDuration(w.target_duration_s) }}</dd>

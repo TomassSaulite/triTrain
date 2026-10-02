@@ -218,7 +218,7 @@ const SPORT_FILTERS: { value: string; label: string }[] = [
         :class="
           sport === f.value
             ? 'bg-indigo-600 text-white ring-indigo-600'
-            : 'bg-white text-slate-700 ring-slate-300'
+            : 'bg-surface text-slate-700 ring-slate-300'
         "
         :aria-pressed="sport === f.value"
         @click="sport = f.value"

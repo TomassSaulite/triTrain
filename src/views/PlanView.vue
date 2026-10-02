@@ -153,19 +153,19 @@ function changeLines(revision: PlanRevision): string[] {
       <CoachNotes :notes="plan.warnings" open />
 
       <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div class="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+        <div class="rounded-lg bg-surface p-3 ring-1 ring-slate-200">
           <dt class="text-xs text-slate-500">Fitness at start</dt>
           <dd class="text-xl font-semibold">{{ Math.round(plan.starting_ctl) }}</dd>
         </div>
-        <div class="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+        <div class="rounded-lg bg-surface p-3 ring-1 ring-slate-200">
           <dt class="text-xs text-slate-500">Peak fitness target</dt>
           <dd class="text-xl font-semibold">{{ Math.round(plan.target_ctl) }}</dd>
         </div>
-        <div class="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+        <div class="rounded-lg bg-surface p-3 ring-1 ring-slate-200">
           <dt class="text-xs text-slate-500">Weeks</dt>
           <dd class="text-xl font-semibold">{{ plan.weeks?.length }}</dd>
         </div>
-        <div class="rounded-lg bg-white p-3 ring-1 ring-slate-200">
+        <div class="rounded-lg bg-surface p-3 ring-1 ring-slate-200">
           <dt class="text-xs text-slate-500">Distance</dt>
           <dd class="text-xl font-semibold">{{ plan.race && distanceLabel(plan.race.distance) }}</dd>
         </div>

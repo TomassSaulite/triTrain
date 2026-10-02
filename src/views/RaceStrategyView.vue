@@ -37,7 +37,7 @@ const segments = computed(() => {
     key: 'transitions',
     label: 'Transitions',
     seconds: strategy.transitions_s,
-    color: '#cbd5e1',
+    color: 'var(--chart-axis)',
   }
   // Both transitions sit together after the swim: close enough at this scale.
   const ordered = strategy.transitions_s ? [legs[0], transitions, ...legs.slice(1)] : legs
@@ -103,7 +103,7 @@ const isTriathlon = computed(() => (page.data.value?.strategy.legs.length ?? 0) 
         <li
           v-for="leg in page.data.value.strategy.legs"
           :key="leg.sport"
-          class="min-w-0 rounded-lg border-t-4 bg-white p-4 shadow-xs ring-1 ring-slate-200"
+          class="min-w-0 rounded-lg border-t-4 bg-surface p-4 shadow-xs ring-1 ring-slate-200"
           :style="{ borderTopColor: `var(--color-${leg.sport})` }"
         >
           <div class="flex items-center justify-between gap-2">

@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 
 @theme {
+  /* Cards, dialogs and other raised surfaces; dark mode redefines it. */
+  --color-surface: #ffffff;
+  /* Toasts and banners: dark in light mode, a raised dark in dark mode. */
+  --color-toast: #0f172a;
   --color-swim: oklch(0.62 0.14 230);
   --color-bike: oklch(0.66 0.17 145);
   --color-run: oklch(0.65 0.19 35);
@@ -22,6 +26,141 @@
   --chart-muted: #64748b;
   --chart-grid: #eef0f3;
   --chart-axis: #cbd5e1;
+}
+
+/*
+ * Dark mode: the same classes, with the colour tokens remapped. Greys invert
+ * (light backgrounds become dark, dark ink becomes light) and the light
+ * tints of each hue become dark ones. It follows the system setting unless
+ * the athlete picks Light or Dark in Settings (data-theme on <html>).
+ * Chart colours are the validated dark steps of the reference palette.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-surface: #111a2b;
+    --color-toast: #273449;
+    --color-slate-50: #0b1220;
+    --color-slate-100: #162033;
+    --color-slate-200: #233046;
+    --color-slate-300: #334155;
+    --color-slate-400: #5b6b82;
+    --color-slate-500: #8b9ab0;
+    --color-slate-600: #a3b1c4;
+    --color-slate-700: #c4cedb;
+    --color-slate-800: #dde4ed;
+    --color-slate-900: #eef2f7;
+    --color-slate-950: #f8fafc;
+    --color-indigo-50: #1d1d47;
+    --color-indigo-100: #26265e;
+    --color-indigo-200: #34348a;
+    --color-indigo-300: #4c4ec0;
+    --color-indigo-400: #7b84f0;
+    --color-indigo-500: #6366f1;
+    --color-indigo-600: #6366f1;
+    --color-indigo-700: #a9b4fb;
+    --color-indigo-800: #c3cbfd;
+    --color-indigo-900: #dfe3fe;
+    --color-indigo-950: #eef0ff;
+    --color-amber-50: #2a1f0a;
+    --color-amber-100: #3a2a0c;
+    --color-amber-200: #5a420f;
+    --color-amber-700: #f5c46a;
+    --color-amber-800: #f8d38c;
+    --color-amber-900: #fbe3b3;
+    --color-amber-950: #fdf0d5;
+    --color-emerald-50: #0b2a20;
+    --color-emerald-100: #0f3a2b;
+    --color-emerald-200: #14533d;
+    --color-emerald-700: #6ee7b7;
+    --color-emerald-800: #a7f3d0;
+    --color-emerald-900: #d1fae5;
+    --color-rose-50: #2d1219;
+    --color-rose-100: #3f1722;
+    --color-rose-200: #5c1f30;
+    --color-rose-700: #fda4af;
+    --color-rose-800: #fecdd3;
+    --color-rose-900: #ffe4e6;
+    --color-sky-50: #0c2433;
+    --color-sky-100: #0f3247;
+    --color-sky-200: #164a69;
+    --color-sky-800: #bae6fd;
+    --color-sky-900: #e0f2fe;
+    --color-violet-200: #4c3a8f;
+    --color-violet-900: #ede9fe;
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #9085e9;
+    --chart-1-soft: #2b4f7d;
+    --chart-surface: #111a2b;
+    --chart-text: #dde4ed;
+    --chart-muted: #8b9ab0;
+    --chart-grid: #1f2a3d;
+    --chart-axis: #334155;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-surface: #111a2b;
+  --color-toast: #273449;
+  --color-slate-50: #0b1220;
+  --color-slate-100: #162033;
+  --color-slate-200: #233046;
+  --color-slate-300: #334155;
+  --color-slate-400: #5b6b82;
+  --color-slate-500: #8b9ab0;
+  --color-slate-600: #a3b1c4;
+  --color-slate-700: #c4cedb;
+  --color-slate-800: #dde4ed;
+  --color-slate-900: #eef2f7;
+  --color-slate-950: #f8fafc;
+  --color-indigo-50: #1d1d47;
+  --color-indigo-100: #26265e;
+  --color-indigo-200: #34348a;
+  --color-indigo-300: #4c4ec0;
+  --color-indigo-400: #7b84f0;
+  --color-indigo-500: #6366f1;
+  --color-indigo-600: #6366f1;
+  --color-indigo-700: #a9b4fb;
+  --color-indigo-800: #c3cbfd;
+  --color-indigo-900: #dfe3fe;
+  --color-indigo-950: #eef0ff;
+  --color-amber-50: #2a1f0a;
+  --color-amber-100: #3a2a0c;
+  --color-amber-200: #5a420f;
+  --color-amber-700: #f5c46a;
+  --color-amber-800: #f8d38c;
+  --color-amber-900: #fbe3b3;
+  --color-amber-950: #fdf0d5;
+  --color-emerald-50: #0b2a20;
+  --color-emerald-100: #0f3a2b;
+  --color-emerald-200: #14533d;
+  --color-emerald-700: #6ee7b7;
+  --color-emerald-800: #a7f3d0;
+  --color-emerald-900: #d1fae5;
+  --color-rose-50: #2d1219;
+  --color-rose-100: #3f1722;
+  --color-rose-200: #5c1f30;
+  --color-rose-700: #fda4af;
+  --color-rose-800: #fecdd3;
+  --color-rose-900: #ffe4e6;
+  --color-sky-50: #0c2433;
+  --color-sky-100: #0f3247;
+  --color-sky-200: #164a69;
+  --color-sky-800: #bae6fd;
+  --color-sky-900: #e0f2fe;
+  --color-violet-200: #4c3a8f;
+  --color-violet-900: #ede9fe;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #9085e9;
+  --chart-1-soft: #2b4f7d;
+  --chart-surface: #111a2b;
+  --chart-text: #dde4ed;
+  --chart-muted: #8b9ab0;
+  --chart-grid: #1f2a3d;
+  --chart-axis: #334155;
 }
 
 @layer base {

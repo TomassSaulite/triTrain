@@ -62,9 +62,9 @@ const hovered = computed(() => (hover.value === null ? null : props.weeks[hover.
       aria-label="Planned and done training load per week"
       @pointerleave="hover = null"
     >
-      <g class="text-[10px]" fill="#64748b">
+      <g class="text-[10px]" fill="var(--chart-muted)">
         <g v-for="t in ticks" :key="t">
-          <line :x1="PAD.left" :x2="width - PAD.right" :y1="y(t)" :y2="y(t)" stroke="#eef0f3" />
+          <line :x1="PAD.left" :x2="width - PAD.right" :y1="y(t)" :y2="y(t)" stroke="var(--chart-grid)" />
           <text :x="PAD.left - 6" :y="y(t) + 3" text-anchor="end">{{ t }}</text>
         </g>
       </g>
@@ -80,7 +80,7 @@ const hovered = computed(() => (hover.value === null ? null : props.weeks[hover.
           :y="PAD.top"
           :width="slot"
           :height="HEIGHT - PAD.top - PAD.bottom"
-          :fill="hover === i ? '#f1f5f9' : 'transparent'"
+          :fill="hover === i ? 'var(--chart-grid)' : 'transparent'"
         />
         <rect
           :x="center(i) - barWidth - 1"
@@ -105,7 +105,7 @@ const hovered = computed(() => (hover.value === null ? null : props.weeks[hover.
           :y="HEIGHT - 6"
           text-anchor="middle"
           class="text-[9px]"
-          fill="#64748b"
+          fill="var(--chart-muted)"
         >
           R
         </text>
@@ -115,13 +115,13 @@ const hovered = computed(() => (hover.value === null ? null : props.weeks[hover.
           :y="HEIGHT - PAD.bottom + 2"
           :width="slot - 2"
           height="2"
-          fill="#4f46e5"
+          fill="var(--color-indigo-600)"
         />
       </g>
     </svg>
     <div
       v-if="hovered && hover !== null"
-      class="pointer-events-none absolute top-6 w-44 rounded-md bg-white px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
+      class="pointer-events-none absolute top-6 w-44 rounded-md bg-surface px-3 py-2 text-xs shadow-md ring-1 ring-slate-200"
       :style="{ left: `${Math.min(center(hover) + 10, width - 180)}px` }"
     >
       <p class="font-medium">
@@ -142,8 +142,8 @@ const hovered = computed(() => (hover.value === null ? null : props.weeks[hover.
 
 <style scoped>
 .weekly-load {
-  /* Categorical slots 1 and 2 of the validated reference palette (light). */
-  --planned: #2a78d6;
-  --done: #eb6834;
+  /* Categorical slots 1 and 2 of the validated reference palette; dark steps come from the theme. */
+  --planned: var(--chart-1);
+  --done: var(--chart-2);
 }
 </style>

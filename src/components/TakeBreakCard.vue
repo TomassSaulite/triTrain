@@ -85,7 +85,7 @@ async function save(): Promise<void> {
 
     <form
       v-else
-      class="space-y-4 rounded-lg bg-white p-4 shadow-xs ring-1 ring-slate-200 sm:p-5"
+      class="space-y-4 rounded-lg bg-surface p-4 shadow-xs ring-1 ring-slate-200 sm:p-5"
       aria-labelledby="break-title"
       @submit.prevent="save"
     >
