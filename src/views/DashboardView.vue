@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { calendarApi, loadApi, plansApi, suggestionsApi } from '@/api'
 import { ApiError } from '@/api/client'
-import type { CalendarDay, Plan, WeekProgress } from '@/api/types'
+import type { CalendarDay, Plan, WeekProgress, WeeklyReview } from '@/api/types'
 import CoachNotes from '@/components/CoachNotes.vue'
 import SuggestionsCard from '@/components/SuggestionsCard.vue'
+import WeeklyReviewCard from '@/components/WeeklyReviewCard.vue'
 import WorkoutCard from '@/components/WorkoutCard.vue'
 import LoadChart from '@/components/charts/LoadChart.vue'
 import AppAlert from '@/components/ui/AppAlert.vue'
@@ -15,6 +16,7 @@ import { useAuthStore } from '@/stores/auth'
 import { KIND_PURPOSE, weekFocus } from '@/utils/coach'
 import { addDays, formatDate, startOfWeek, today } from '@/utils/dates'
 import { formatDuration, formatPercent, formatTss } from '@/utils/format'
+import { hasSeen, markSeen, unmarkSeen } from '@/utils/seen'
 
 const auth = useAuthStore()
 const todayDate = today()
@@ -37,9 +39,11 @@ const dashboard = useAsync(async () => {
     loadApi.series(addDays(todayDate, -90), todayDate),
     suggestionsApi.pending(),
   ])
-  const progress: WeekProgress[] = plan ? await plansApi.progress(plan.id) : []
+  const [progress, review]: [WeekProgress[], WeeklyReview | null] = plan
+    ? await Promise.all([plansApi.progress(plan.id), plansApi.weeklyReview(plan.id)])
+    : [[], null]
 
-  return { plan, days: week.data, summary, series, suggestions, progress }
+  return { plan, days: week.data, summary, series, suggestions, progress, review }
 })
 
 const todayEntry = computed<CalendarDay | undefined>(() => dashboard.data.value?.days[0])
@@ -49,6 +53,23 @@ const thisWeek = computed(() =>
 )
 const race = computed(() => dashboard.data.value?.plan?.race)
 const focus = computed(() => weekFocus(dashboard.data.value?.progress ?? [], startOfWeek(todayDate)))
+
+/** Last week's review shows until the athlete dismisses it, once per week. */
+const review = computed(() => dashboard.data.value?.review ?? null)
+const reviewKey = computed(() => (review.value ? `review.${review.value.week_start}` : ''))
+const reviewDismissed = ref(false)
+watch(reviewKey, (key) => (reviewDismissed.value = key !== '' && hasSeen(key)), { immediate: true })
+const showReview = computed(() => review.value !== null && !reviewDismissed.value)
+
+function dismissReview(): void {
+  markSeen(reviewKey.value)
+  reviewDismissed.value = true
+}
+
+function reopenReview(): void {
+  unmarkSeen(reviewKey.value)
+  reviewDismissed.value = false
+}
 
 function removeSuggestion(id: number): void {
   const data = dashboard.data.value
@@ -88,6 +109,7 @@ function formLabel(tsb: number): string {
         <RouterLink :to="{ name: 'races' }" class="font-medium underline">Add your goal race</RouterLink>
         and the coach will build one.
       </AppAlert>
+      <WeeklyReviewCard v-if="showReview && review" :review="review" @dismiss="dismissReview" />
       <CoachNotes :notes="dashboard.data.value.plan?.warnings ?? []" />
 
       <SuggestionsCard :suggestions="dashboard.data.value.suggestions" @resolved="removeSuggestion" />
@@ -185,6 +207,14 @@ function formLabel(tsb: number): string {
             </dl>
           </template>
           <p v-else class="text-sm text-slate-500">No plan week this week.</p>
+          <button
+            v-if="review && !showReview"
+            type="button"
+            class="mt-4 text-sm font-medium text-indigo-600 hover:underline"
+            @click="reopenReview"
+          >
+            Read last week's review
+          </button>
         </AppCard>
       </div>
     </div>

@@ -8,7 +8,9 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
 
 - **Onboarding**: experience and weekly hours, the athlete's week (long ride and run days,
   pool days, rest days, bricks), thresholds, and the goal race that builds the first plan.
-- **Today**: today's sessions and why each is in the plan, the phase and focus of the week,
+- **Today**: last week in review (a verdict, planned load and key sessions done, the coach's
+  notes, what next week brings and what the coach changed; dismiss it once read), today's
+  sessions and why each is in the plan, the phase and focus of the week,
   the next six days, race countdown, the coach's notes on the plan, threshold suggestions to accept or dismiss, this week's planned against done load, and fitness,
   fatigue and form over 90 days.
 - **Calendar**: a week or four-week view of planned sessions, races and extra activities.

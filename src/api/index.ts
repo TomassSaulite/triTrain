@@ -23,6 +23,7 @@ import type {
   ThresholdSuggestion,
   User,
   WeekProgress,
+  WeeklyReview,
   WorkoutAlternative,
   WorkoutTemplate,
   WorkoutTemplateInput,
@@ -105,6 +106,9 @@ export const plansApi = {
   archive: (id: number) => unwrap(client.post<Data<Plan>>(`plans/${id}/archive`)),
   revisions: (id: number) => client.get<Paginated<PlanRevision>>(`plans/${id}/revisions`),
   progress: (id: number) => unwrap(client.get<Data<WeekProgress[]>>(`plans/${id}/progress`)),
+  /** The coach's summary of the week containing `week` (default last week); null outside the plan. */
+  weeklyReview: (id: number, week?: string) =>
+    unwrap(client.get<Data<WeeklyReview | null>>(`plans/${id}/weekly-review`, week ? { week } : undefined)),
 }
 
 export const calendarApi = {

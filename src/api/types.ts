@@ -255,6 +255,27 @@ export interface WeekProgress {
   compliance: number | null
 }
 
+export type ReviewVerdict = 'on_track' | 'keys_missed' | 'under' | 'over' | 'rest'
+
+export interface WeeklyReview {
+  week_start: string
+  week_end: string
+  phase: PhaseType
+  is_recovery: boolean
+  /** False while the reviewed week is still under way. */
+  finished: boolean
+  verdict: ReviewVerdict
+  headline: string
+  notes: string[]
+  next_week: string | null
+  planned: { tss: number; duration_s: number; sessions: number }
+  actual: { tss: number; duration_s: number; activities: number }
+  compliance: number | null
+  key_sessions: { planned: number; done: number; missed: string[] }
+  fitness: { ctl_before: number | null; ctl_after: number | null; tsb_after: number | null }
+  coach_changes: { version: number; summary: string; created_at: string }[]
+}
+
 export interface Activity {
   id: number
   source: ActivitySource
