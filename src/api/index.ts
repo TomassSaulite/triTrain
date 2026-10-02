@@ -24,6 +24,7 @@ import type {
   User,
   WeekProgress,
   WorkoutTemplate,
+  WorkoutTemplateInput,
 } from './types'
 
 let unauthorizedHandler: () => void = () => {}
@@ -143,6 +144,12 @@ export const templatesApi = {
         mine: query.mine ? 1 : undefined,
       }),
     ),
+  get: (id: number) => unwrap(client.get<Data<WorkoutTemplate>>(`workout-templates/${id}`)),
+  create: (input: WorkoutTemplateInput) =>
+    unwrap(client.post<Data<WorkoutTemplate>>('workout-templates', input)),
+  update: (id: number, input: WorkoutTemplateInput) =>
+    unwrap(client.put<Data<WorkoutTemplate>>(`workout-templates/${id}`, input)),
+  remove: (id: number) => client.delete(`workout-templates/${id}`),
 }
 
 export { ApiError } from './client'

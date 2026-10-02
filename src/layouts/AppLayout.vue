@@ -13,6 +13,7 @@ const links = [
   { to: { name: 'plan' }, label: 'Plan' },
   { to: { name: 'races' }, label: 'Races' },
   { to: { name: 'activities' }, label: 'Activities' },
+  { to: { name: 'library' }, label: 'Workouts' },
   { to: { name: 'settings' }, label: 'Settings' },
 ]
 

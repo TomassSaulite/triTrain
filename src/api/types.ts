@@ -338,3 +338,16 @@ export interface WorkoutTemplate {
   is_system: boolean
   is_active: boolean
 }
+
+export interface WorkoutTemplateInput {
+  name: string
+  description?: string | null
+  sport: Discipline
+  kind: WorkoutKind
+  phases: PhaseType[]
+  distances?: RaceDistance[] | null
+  min_s: number
+  max_s: number
+  structure: WorkoutStructure
+  is_active?: boolean
+}

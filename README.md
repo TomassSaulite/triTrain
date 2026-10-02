@@ -18,6 +18,9 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
   the "what changed and why" log.
 - **Races**: A, B and C races; build a plan from an A race.
 - **Activities**: history, manual logging, and how each session was scored.
+- **Workouts**: the library the coach builds plans from. Browse and inspect every workout,
+  and build your own (or copy and adapt one) with a step editor. Your workouts are preferred
+  wherever they fit a slot.
 - **Settings**: profile and week, coaching knobs (ramp limit, recovery cadence, target fitness,
   daily time limits, sport split), thresholds, travel and busy days, and Strava.
 

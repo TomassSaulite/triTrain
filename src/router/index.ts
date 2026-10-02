@@ -44,6 +44,18 @@ export const router = createRouter({
         { path: 'plan', name: 'plan', component: () => import('@/views/PlanView.vue') },
         { path: 'races', name: 'races', component: () => import('@/views/RacesView.vue') },
         { path: 'activities', name: 'activities', component: () => import('@/views/ActivitiesView.vue') },
+        { path: 'library', name: 'library', component: () => import('@/views/LibraryView.vue') },
+        {
+          path: 'library/new',
+          name: 'template-new',
+          component: () => import('@/views/TemplateEditorView.vue'),
+        },
+        {
+          path: 'library/:id/edit',
+          name: 'template-edit',
+          component: () => import('@/views/TemplateEditorView.vue'),
+          props: true,
+        },
         { path: 'settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
       ],
     },
