@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { calendarApi, loadApi, plansApi, suggestionsApi } from '@/api'
 import { ApiError } from '@/api/client'
 import type { CalendarDay, Plan, WeekProgress } from '@/api/types'
+import CoachNotes from '@/components/CoachNotes.vue'
 import SuggestionsCard from '@/components/SuggestionsCard.vue'
 import WorkoutCard from '@/components/WorkoutCard.vue'
 import LoadChart from '@/components/charts/LoadChart.vue'
@@ -11,6 +12,7 @@ import AppCard from '@/components/ui/AppCard.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useAuthStore } from '@/stores/auth'
+import { KIND_PURPOSE, weekFocus } from '@/utils/coach'
 import { addDays, formatDate, startOfWeek, today } from '@/utils/dates'
 import { formatDuration, formatPercent, formatTss } from '@/utils/format'
 
@@ -46,6 +48,7 @@ const thisWeek = computed(() =>
   dashboard.data.value?.progress.find((w) => w.start_date === startOfWeek(todayDate)),
 )
 const race = computed(() => dashboard.data.value?.plan?.race)
+const focus = computed(() => weekFocus(dashboard.data.value?.progress ?? [], startOfWeek(todayDate)))
 
 function removeSuggestion(id: number): void {
   const data = dashboard.data.value
@@ -69,6 +72,10 @@ function formLabel(tsb: number): string {
             {{ formatDate(todayDate, { weekday: 'long', day: 'numeric', month: 'long' }) }}
           </p>
           <h1 class="text-2xl font-semibold">Hi {{ auth.user?.name.split(' ')[0] }}</h1>
+          <p v-if="focus" class="mt-1 text-sm text-slate-600">
+            <span class="font-medium text-slate-800 capitalize">{{ focus.phase }}</span>
+            · week {{ focus.week }} of {{ focus.weeksInPhase }}. {{ focus.message }}
+          </p>
         </div>
         <p v-if="race" class="text-sm text-slate-600">
           <span class="text-2xl font-semibold text-slate-900 tabular-nums">{{ race.days_to_go }}</span>
@@ -81,17 +88,18 @@ function formLabel(tsb: number): string {
         <RouterLink :to="{ name: 'races' }" class="font-medium underline">Add your goal race</RouterLink>
         and the coach will build one.
       </AppAlert>
-      <AppAlert v-for="warning in dashboard.data.value.plan?.warnings ?? []" :key="warning" tone="warning">
-        {{ warning }}
-      </AppAlert>
+      <CoachNotes :notes="dashboard.data.value.plan?.warnings ?? []" />
 
       <SuggestionsCard :suggestions="dashboard.data.value.suggestions" @resolved="removeSuggestion" />
 
       <div class="grid gap-6 lg:grid-cols-3">
         <AppCard title="Today" class="lg:col-span-1">
-          <div v-if="todayEntry && todayEntry.workouts.length" class="space-y-2">
-            <WorkoutCard v-for="w in todayEntry.workouts" :key="w.id" :workout="w" />
-          </div>
+          <ul v-if="todayEntry && todayEntry.workouts.length" class="space-y-3">
+            <li v-for="w in todayEntry.workouts" :key="w.id">
+              <WorkoutCard :workout="w" />
+              <p class="mt-1 px-1 text-xs text-slate-500">{{ KIND_PURPOSE[w.kind] }}</p>
+            </li>
+          </ul>
           <p v-else-if="todayEntry?.races.length" class="text-sm">
             Race day: {{ todayEntry.races[0].name }}. Good luck!
           </p>
@@ -175,9 +183,6 @@ function formLabel(tsb: number): string {
               <dt class="text-slate-500">To go</dt>
               <dd class="text-right">{{ thisWeek.sessions.upcoming }}</dd>
             </dl>
-            <p v-if="thisWeek.is_recovery" class="mt-3 text-sm text-slate-600">
-              Recovery week: keep it easy.
-            </p>
           </template>
           <p v-else class="text-sm text-slate-500">No plan week this week.</p>
         </AppCard>

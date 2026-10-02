@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { plansApi } from '@/api'
 import { ApiError } from '@/api/client'
 import type { PhaseType, PlanRevision, RevisionReason, WeekProgress } from '@/api/types'
+import CoachNotes from '@/components/CoachNotes.vue'
 import WeeklyLoadChart from '@/components/charts/WeeklyLoadChart.vue'
 import AppAlert from '@/components/ui/AppAlert.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -149,7 +150,7 @@ function changeLines(revision: PlanRevision): string[] {
       </header>
 
       <AppAlert v-if="error" tone="error">{{ error }}</AppAlert>
-      <AppAlert v-for="w in plan.warnings" :key="w" tone="warning">{{ w }}</AppAlert>
+      <CoachNotes :notes="plan.warnings" open />
 
       <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div class="rounded-lg bg-white p-3 ring-1 ring-slate-200">
@@ -204,14 +205,14 @@ function changeLines(revision: PlanRevision): string[] {
           </button>
         </template>
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[40rem] text-sm">
+          <table class="w-full text-sm sm:min-w-[40rem]">
             <thead class="text-left text-xs text-slate-500">
               <tr>
                 <th class="py-2 font-medium">Week</th>
                 <th class="py-2 font-medium">Phase</th>
                 <th class="py-2 text-right font-medium">Planned</th>
-                <th class="py-2 text-right font-medium">Done</th>
-                <th class="py-2 text-right font-medium">Compliance</th>
+                <th class="hidden py-2 text-right font-medium sm:table-cell">Done</th>
+                <th class="hidden py-2 text-right font-medium sm:table-cell">Compliance</th>
                 <th class="py-2 text-right font-medium">Sessions</th>
               </tr>
             </thead>
@@ -230,8 +231,8 @@ function changeLines(revision: PlanRevision): string[] {
                 <td class="py-2 text-right">
                   {{ formatTss(week.planned.tss) }} TSS · {{ formatDuration(week.planned.duration_s) }}
                 </td>
-                <td class="py-2 text-right">{{ formatTss(week.actual.tss) }} TSS</td>
-                <td class="py-2 text-right">
+                <td class="hidden py-2 text-right sm:table-cell">{{ formatTss(week.actual.tss) }} TSS</td>
+                <td class="hidden py-2 text-right sm:table-cell">
                   {{ week.compliance === null ? '–' : formatPercent(week.compliance) }}
                 </td>
                 <td class="py-2 text-right">
