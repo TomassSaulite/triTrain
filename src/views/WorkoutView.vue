@@ -15,7 +15,9 @@ import AppCard from '@/components/ui/AppCard.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useForm } from '@/composables/useForm'
-import { formatDate, today } from '@/utils/dates'
+import { useToast } from '@/composables/useToast'
+import { KIND_PURPOSE } from '@/utils/coach'
+import { addDays, formatDate, today } from '@/utils/dates'
 import { formatDistance, formatDuration, formatPercent, formatTss, titleCase } from '@/utils/format'
 import { isOpenStatus } from '@/utils/sports'
 
@@ -25,6 +27,7 @@ const { confirm } = useDialog()
 
 const workout = useAsync(() => workoutsApi.get(Number(props.id)))
 const { submitting, error, submit } = useForm()
+const toast = useToast()
 const moveTo = ref('')
 
 const w = computed<PlannedWorkoutDetail | null>(() => workout.data.value)
@@ -47,9 +50,26 @@ watch(w, (value) => {
   alternatives.value = null
 })
 
-async function resize(): Promise<void> {
-  const updated = await submit(() => workoutsApi.resize(Number(props.id), minutes.value * 60))
+/** The next fortnight as one-tap targets for moving the session. */
+const moveDays = computed(() =>
+  Array.from({ length: 14 }, (_, i) => addDays(today(), i)).filter((d) => d !== w.value?.date),
+)
+
+function show(updated: PlannedWorkoutDetail | undefined): updated is PlannedWorkoutDetail {
   if (updated) workout.data.value = updated
+
+  return updated !== undefined
+}
+
+async function resize(): Promise<void> {
+  const before = w.value!.target_duration_s
+  const updated = await submit(() => workoutsApi.resize(Number(props.id), minutes.value * 60))
+  if (!show(updated)) return
+
+  toast.success(`Now ${formatDuration(updated.target_duration_s)}.`, {
+    label: 'Undo',
+    run: async () => void show(await submit(() => workoutsApi.resize(updated.id, before))),
+  })
 }
 
 async function loadAlternatives(): Promise<void> {
@@ -59,13 +79,31 @@ async function loadAlternatives(): Promise<void> {
 }
 
 async function swap(templateId: number): Promise<void> {
+  const previous = w.value!.template_id
   const updated = await submit(() => workoutsApi.swap(Number(props.id), templateId))
-  if (updated) workout.data.value = updated
+  if (!show(updated)) return
+
+  toast.success(
+    `Swapped for "${updated.title}".`,
+    previous === null
+      ? undefined
+      : {
+          label: 'Undo',
+          run: async () => void show(await submit(() => workoutsApi.swap(updated.id, previous))),
+        },
+  )
 }
 
-async function move(): Promise<void> {
-  const updated = await submit(() => workoutsApi.move(Number(props.id), moveTo.value))
-  if (updated) workout.data.value = updated
+async function move(date: string = moveTo.value): Promise<void> {
+  const from = w.value!.date
+  const updated = await submit(() => workoutsApi.move(Number(props.id), date))
+  if (!show(updated)) return
+
+  moveTo.value = ''
+  toast.success(`Moved to ${formatDate(updated.date)}.`, {
+    label: 'Undo',
+    run: async () => void show(await submit(() => workoutsApi.move(updated.id, from))),
+  })
 }
 
 async function skip(): Promise<void> {
@@ -77,8 +115,7 @@ async function skip(): Promise<void> {
     }))
   )
     return
-  const updated = await submit(() => workoutsApi.skip(Number(props.id)))
-  if (updated) workout.data.value = updated
+  if (show(await submit(() => workoutsApi.skip(Number(props.id))))) toast.info('Skipped. Rest well.')
 }
 </script>
 
@@ -101,6 +138,9 @@ async function skip(): Promise<void> {
         <p class="text-slate-600">
           {{ formatDate(w.date, { weekday: 'long', day: 'numeric', month: 'long' }) }} ·
           {{ titleCase(w.kind) }}
+        </p>
+        <p class="mt-3 rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-950">
+          <span class="font-medium">Coach:</span> {{ KIND_PURPOSE[w.kind] }}
         </p>
       </header>
 
@@ -224,24 +264,42 @@ async function skip(): Promise<void> {
             </template>
           </div>
 
-          <form v-if="w.parent_id === null" class="flex flex-wrap items-end gap-3" @submit.prevent="move">
-            <label class="text-sm">
-              <span class="block font-medium text-slate-700">Move to</span>
-              <input
-                v-model="moveTo"
-                type="date"
-                :min="today()"
-                required
-                class="mt-1 rounded-md px-3 py-2 text-sm ring-1 ring-slate-300"
-              />
-            </label>
-            <AppButton type="submit" variant="secondary" :loading="submitting" :disabled="!moveTo"
-              >Move</AppButton
-            >
-            <AppButton variant="ghost" class="ml-auto" :disabled="submitting" @click="skip"
-              >Skip this workout</AppButton
-            >
-          </form>
+          <div v-if="w.parent_id === null" class="space-y-2">
+            <p class="text-sm font-medium text-slate-700">Move to</p>
+            <div class="flex gap-1.5 overflow-x-auto pb-1">
+              <button
+                v-for="day in moveDays"
+                :key="day"
+                type="button"
+                class="shrink-0 rounded-md px-2.5 py-1.5 text-center text-xs ring-1 ring-slate-300 hover:bg-indigo-50 hover:ring-indigo-400 disabled:opacity-50"
+                :disabled="submitting"
+                @click="move(day)"
+              >
+                <span class="block font-medium">{{ formatDate(day, { weekday: 'short' }) }}</span>
+                <span class="block text-slate-500">{{
+                  formatDate(day, { day: 'numeric', month: 'short' })
+                }}</span>
+              </button>
+            </div>
+            <form class="flex flex-wrap items-end gap-3" @submit.prevent="move()">
+              <label class="text-sm">
+                <span class="block text-slate-600">Or pick a date</span>
+                <input
+                  v-model="moveTo"
+                  type="date"
+                  :min="today()"
+                  required
+                  class="mt-1 rounded-md px-3 py-2 text-sm ring-1 ring-slate-300"
+                />
+              </label>
+              <AppButton type="submit" variant="secondary" :loading="submitting" :disabled="!moveTo"
+                >Move</AppButton
+              >
+              <AppButton variant="ghost" class="ml-auto" :disabled="submitting" @click="skip"
+                >Skip this workout</AppButton
+              >
+            </form>
+          </div>
         </div>
       </AppCard>
     </div>
