@@ -42,7 +42,6 @@ export const router = createRouter({
           props: true,
         },
         { path: 'plan', name: 'plan', component: () => import('@/views/PlanView.vue') },
-        { path: 'coach', name: 'coach', component: () => import('@/views/CoachView.vue') },
         { path: 'races', name: 'races', component: () => import('@/views/RacesView.vue') },
         {
           path: 'races/:id/strategy',

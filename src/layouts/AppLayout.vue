@@ -12,16 +12,11 @@ const ACTIVE = 'border-indigo-600! text-indigo-700!'
 const primary = [
   { name: 'dashboard', label: 'Today', icon: 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10' },
   { name: 'calendar', label: 'Calendar', icon: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4' },
-  {
-    name: 'coach',
-    label: 'Coach',
-    icon: 'M4 5h16v11H9l-5 4V5zM8 9h8M8 12h5',
-  },
   { name: 'plan', label: 'Plan', icon: 'M4 19h4V9H4zM10 19h4V5h-4zM16 19h4v-7h-4z' },
+  { name: 'races', label: 'Races', icon: 'M5 21V4M5 4h11l-2 4 2 4H5' },
 ]
 
 const secondary = [
-  { name: 'races', label: 'Races' },
   { name: 'activities', label: 'Activities' },
   { name: 'library', label: 'Workouts' },
   { name: 'settings', label: 'Settings' },

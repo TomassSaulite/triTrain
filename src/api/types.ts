@@ -446,19 +446,3 @@ export interface WorkoutAlternative {
   max_s: number
   is_personal: boolean
 }
-
-export type CoachDriver = 'rules' | 'claude' | 'ollama'
-
-export interface CoachMessage {
-  id: number
-  role: 'athlete' | 'coach'
-  content: string
-  /** Who wrote a coach reply; 'rules' when the built-in coach answered. */
-  driver: CoachDriver | null
-  created_at: string
-}
-
-export interface CoachConversation {
-  data: CoachMessage[]
-  meta: { driver: CoachDriver; suggestions: string[] }
-}

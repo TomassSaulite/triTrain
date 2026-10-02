@@ -13,9 +13,6 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
   sessions and why each is in the plan, the phase and focus of the week,
   the next six days, race countdown, the coach's notes on the plan, threshold suggestions to accept or dismiss, this week's planned against done load, and fitness,
   fatigue and form over 90 days.
-- **Coach**: chat with your coach. Ask about today's session, how training is going, the race
-  plan or how to change the plan, or tap a suggested question. The API decides who answers: a
-  free built-in coach, or an AI coach (Claude or a local open model) when it is set up.
 - **Calendar**: a week or four-week view of planned sessions, races and extra activities.
   Drag a session to another day to move it; on phones the days are a list.
 - **Workout detail**: the session's steps with the athlete's real targets (watts, paces, heart
@@ -39,7 +36,7 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
 - **Settings**: profile and week, coaching knobs (ramp limit, recovery cadence, target fitness,
   daily time limits, sport split), thresholds, travel and busy days, and Strava.
 
-On phones Today, Calendar, Coach and Plan sit in a bottom tab bar, with the rest under More.
+On phones the main sections sit in a bottom tab bar, with the rest under More.
 
 ## Getting started
 
