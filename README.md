@@ -8,7 +8,7 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
 
 - **Onboarding**: experience and weekly hours, the athlete's week (long ride and run days,
   pool days, rest days, bricks), thresholds, and the goal race that builds the first plan.
-- **Today**: last week in review (a verdict, planned load and key sessions done, the coach's
+- **Today**: recent sessions waiting for a "how did it feel?" rating, last week in review (a verdict, planned load and key sessions done, the coach's
   notes, what next week brings and what the coach changed; dismiss it once read), today's
   sessions and why each is in the plan, the phase and focus of the week,
   the next six days, race countdown, the coach's notes on the plan, threshold suggestions to accept or dismiss, this week's planned against done load, and fitness,
@@ -26,7 +26,10 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
 - **Race plan**: for every race, what to hold on each leg (pace or power, from your
   thresholds), predicted splits and finish time, and how to fuel before and during. Reached from
   the race list and the dashboard countdown.
-- **Activities**: history, manual logging, and how each session was scored.
+- **Activities**: history, manual logging, how each session was scored, and how it felt: rate
+  effort (1–10), muscles, breathing, energy and mood (five steps each), any pain and a note.
+  Charts show each measure over time. The coach acts on the ratings: pain eases the next hard
+  session of that sport, and several worn-out sessions in a row ease the next hard one.
 - **Workouts**: the library the coach builds plans from. Browse and inspect every workout,
   and build your own (or copy and adapt one) with a step editor. Your workouts are preferred
   wherever they fit a slot.

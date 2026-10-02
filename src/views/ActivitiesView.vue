@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useDialog } from '@/composables/useDialog'
 import { reactive, ref, watch } from 'vue'
-import { activitiesApi } from '@/api'
-import type { Activity, ActivityInput, Sport } from '@/api/types'
+import { activitiesApi, feedbackApi } from '@/api'
+import type { Activity, ActivityInput, SessionFeedback, Sport } from '@/api/types'
 import SportBadge from '@/components/SportBadge.vue'
+import FeelForm from '@/components/feel/FeelForm.vue'
+import FeelTrends from '@/components/feel/FeelTrends.vue'
 import AppAlert from '@/components/ui/AppAlert.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
@@ -11,7 +13,8 @@ import AppField from '@/components/ui/AppField.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useForm } from '@/composables/useForm'
-import { formatDateTime } from '@/utils/dates'
+import { formatDateTime, today } from '@/utils/dates'
+import { feelSummary } from '@/utils/feel'
 import { formatClock, formatDistance, formatDuration, formatTss, parseClock, titleCase } from '@/utils/format'
 
 const { confirm } = useDialog()
@@ -21,6 +24,22 @@ const page = ref(1)
 const list = useAsync(() => activitiesApi.list({ sport: sport.value || undefined, page: page.value }))
 watch([sport, page], () => list.run())
 watch(sport, () => (page.value = 1))
+
+/** How rated sessions felt over the last eight weeks. */
+const TREND_DAYS = 56
+const trends = useAsync(() => feedbackApi.history(TREND_DAYS))
+
+/** The activity whose rating form is open, if any. */
+const rating = ref<number | null>(null)
+
+function rated(activity: Activity, feedback: SessionFeedback | null): void {
+  const data = list.data.value
+  if (data) {
+    list.data.value = { ...data, data: data.data.map((a) => (a.id === activity.id ? { ...a, feedback } : a)) }
+  }
+  rating.value = null
+  void trends.run()
+}
 
 const { submitting, error, fieldErrors, submit } = useForm()
 const showForm = ref(false)
@@ -208,6 +227,16 @@ const SPORT_FILTERS: { value: string; label: string }[] = [
       </button>
     </div>
 
+    <AppCard title="How you've felt">
+      <LoadingState
+        :loading="trends.loading.value && !trends.data.value"
+        :error="trends.error.value"
+        @retry="trends.run"
+      >
+        <FeelTrends :entries="trends.data.value ?? []" :days="TREND_DAYS" :today="today()" />
+      </LoadingState>
+    </AppCard>
+
     <LoadingState
       :loading="list.loading.value && !list.data.value"
       :error="list.error.value"
@@ -218,43 +247,64 @@ const SPORT_FILTERS: { value: string; label: string }[] = [
           Nothing here yet. Connect Strava in settings or log an activity.
         </p>
         <ul class="divide-y divide-slate-100" :class="{ 'opacity-60': list.loading.value }">
-          <li
-            v-for="a in list.data.value?.data"
-            :key="a.id"
-            class="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0"
-          >
-            <SportBadge :sport="a.sport" />
-            <div class="min-w-0 flex-1">
-              <p class="truncate text-sm font-medium">{{ a.name ?? titleCase(a.sport) }}</p>
-              <p class="text-xs text-slate-500">
-                {{ formatDateTime(a.started_at) }} · {{ titleCase(a.source) }}
-                <RouterLink
-                  v-if="a.planned_workout_id"
-                  :to="{ name: 'workout', params: { id: a.planned_workout_id } }"
-                  class="text-indigo-600 hover:underline"
-                >
-                  · planned session
-                </RouterLink>
+          <li v-for="a in list.data.value?.data" :key="a.id" class="py-3 first:pt-0 last:pb-0">
+            <div class="flex items-start gap-3">
+              <SportBadge :sport="a.sport" class="mt-0.5" />
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-medium">{{ a.name ?? titleCase(a.sport) }}</p>
+                <p class="text-xs text-slate-500">
+                  {{ formatDateTime(a.started_at) }} · {{ titleCase(a.source) }}
+                  <RouterLink
+                    v-if="a.planned_workout_id"
+                    :to="{ name: 'workout', params: { id: a.planned_workout_id } }"
+                    class="text-indigo-600 hover:underline"
+                  >
+                    · planned session
+                  </RouterLink>
+                </p>
+                <p class="mt-0.5 text-sm text-slate-700 tabular-nums">
+                  {{ formatDuration(a.duration_s)
+                  }}<template v-if="a.distance_m"> · {{ formatDistance(a.distance_m) }}</template>
+                  <template v-if="pace(a)"> · {{ pace(a) }}</template>
+                </p>
+              </div>
+              <p
+                class="shrink-0 text-right text-sm font-medium tabular-nums"
+                :title="a.tss_method ? `From ${titleCase(a.tss_method)}` : undefined"
+              >
+                {{ formatTss(a.tss) }} TSS
               </p>
             </div>
-            <p class="text-sm text-slate-700 tabular-nums">
-              {{ formatDuration(a.duration_s)
-              }}<template v-if="a.distance_m"> · {{ formatDistance(a.distance_m) }}</template>
-              <template v-if="pace(a)"> · {{ pace(a) }}</template>
-            </p>
-            <p
-              class="w-20 text-right text-sm font-medium tabular-nums"
-              :title="a.tss_method ? `From ${titleCase(a.tss_method)}` : undefined"
-            >
-              {{ formatTss(a.tss) }} TSS
-            </p>
-            <button
-              v-if="a.source === 'manual'"
-              class="text-xs text-slate-500 hover:text-rose-700"
-              @click="remove(a)"
-            >
-              Delete
-            </button>
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                class="rounded-full px-2.5 py-0.5 text-left text-xs ring-1"
+                :class="
+                  a.feedback
+                    ? 'bg-slate-50 text-slate-700 ring-slate-200 hover:ring-indigo-300'
+                    : 'font-medium text-indigo-700 ring-indigo-200 hover:bg-indigo-50'
+                "
+                :aria-expanded="rating === a.id"
+                @click="rating = rating === a.id ? null : a.id"
+              >
+                {{ a.feedback ? feelSummary(a.feedback) : 'How did it feel?' }}
+              </button>
+              <button
+                v-if="a.source === 'manual'"
+                class="ml-auto text-xs text-slate-500 hover:text-rose-700"
+                @click="remove(a)"
+              >
+                Delete
+              </button>
+            </div>
+            <div v-if="rating === a.id" class="mt-3 rounded-lg bg-slate-50 p-4">
+              <FeelForm
+                :activity-id="a.id"
+                :feedback="a.feedback"
+                @saved="(f) => rated(a, f)"
+                @removed="rated(a, null)"
+              />
+            </div>
           </li>
         </ul>
         <nav

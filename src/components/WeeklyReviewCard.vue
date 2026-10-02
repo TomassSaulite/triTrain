@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { ReviewVerdict, WeeklyReview } from '@/api/types'
 import AppButton from '@/components/ui/AppButton.vue'
 import { formatDate } from '@/utils/dates'
+import { FEEL_SCALES, levelLabel } from '@/utils/feel'
 import { formatDuration, formatPercent } from '@/utils/format'
 
 const props = defineProps<{ review: WeeklyReview }>()
@@ -22,6 +23,14 @@ const range = computed(
 )
 /** The bar shows up to 100%; anything beyond is said in the label. */
 const done = computed(() => Math.min(1, props.review.compliance ?? 0))
+
+/** The week's average ratings that were given, with their words. */
+const feel = computed(() =>
+  FEEL_SCALES.flatMap((scale) => {
+    const value = props.review.feel?.[scale.key] ?? null
+    return value === null ? [] : [{ label: scale.label, value, word: levelLabel(scale.key, value) }]
+  }),
+)
 </script>
 
 <template>
@@ -84,6 +93,18 @@ const done = computed(() => Math.min(1, props.review.compliance ?? 0))
           />
         </ol>
       </div>
+    </div>
+
+    <div v-if="review.feel?.rated" class="mt-4 text-sm">
+      <p class="text-slate-600">How it felt ({{ review.feel.rated }} of {{ review.feel.sessions }} rated)</p>
+      <ul class="mt-1 flex flex-wrap gap-1.5">
+        <li v-if="review.feel.rpe !== null" class="rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-800">
+          Effort {{ review.feel.rpe.toFixed(1) }}
+        </li>
+        <li v-for="f in feel" :key="f.label" class="rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-800">
+          {{ f.label }} {{ f.value.toFixed(1) }} <span class="text-slate-500">{{ f.word }}</span>
+        </li>
+      </ul>
     </div>
 
     <ul v-if="review.notes.length" class="mt-4 space-y-1.5 text-sm text-slate-700">

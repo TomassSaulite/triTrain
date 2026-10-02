@@ -9,6 +9,7 @@ import type {
   AvailabilityOverride,
   Calendar,
   DailyLoad,
+  FeedbackEntry,
   Data,
   LoadSummary,
   Paginated,
@@ -18,6 +19,8 @@ import type {
   Race,
   RaceInput,
   RaceStrategy,
+  SessionFeedback,
+  SessionFeedbackInput,
   StravaStatus,
   Threshold,
   ThresholdMetric,
@@ -141,6 +144,14 @@ export const activitiesApi = {
   get: (id: number) => unwrap(client.get<Data<Activity>>(`activities/${id}`)),
   create: (input: ActivityInput) => unwrap(client.post<Data<Activity>>('activities', input)),
   remove: (id: number) => client.delete(`activities/${id}`),
+  /** Rates a session; `plan_change` says what the coach changed in response, if anything. */
+  rate: (id: number, input: SessionFeedbackInput) =>
+    client.put<{ data: SessionFeedback; plan_change: string | null }>(`activities/${id}/feedback`, input),
+  unrate: (id: number) => client.delete(`activities/${id}/feedback`),
+}
+
+export const feedbackApi = {
+  history: (days = 56) => unwrap(client.get<Data<FeedbackEntry[]>>('feedback', { days })),
 }
 
 export const loadApi = {

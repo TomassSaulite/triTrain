@@ -18,6 +18,16 @@ const review: WeeklyReview = {
   compliance: 0.9,
   key_sessions: { planned: 3, done: 2, missed: ['Long run'] },
   fitness: { ctl_before: 60.2, ctl_after: 62.9, tsb_after: -8 },
+  feel: {
+    sessions: 7,
+    rated: 5,
+    rpe: 5.8,
+    muscles: 3.2,
+    breathing: 2.4,
+    energy: 2.6,
+    mood: 2,
+    pain_reports: 0,
+  },
   coach_changes: [
     { version: 5, summary: 'Moved the long run to Sunday.', created_at: '2026-10-14T06:00:00Z' },
   ],
@@ -35,6 +45,9 @@ describe('WeeklyReviewCard', () => {
     expect(text).toContain('Fitness rose from 60 to 63.')
     expect(text).toContain(review.next_week)
     expect(text).toContain('The coach adjusted your plan once')
+    expect(text).toContain('How it felt (5 of 7 rated)')
+    expect(text).toContain('Effort 5.8')
+    expect(text).toContain('Muscles 3.2 Tired')
   })
 
   it('says "so far" for a week still under way and hides empty parts', () => {

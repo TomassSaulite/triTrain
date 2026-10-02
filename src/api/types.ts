@@ -297,6 +297,16 @@ export interface WeeklyReview {
   actual: { tss: number; duration_s: number; activities: number }
   compliance: number | null
   key_sessions: { planned: number; done: number; missed: string[] }
+  feel: {
+    sessions: number
+    rated: number
+    rpe: number | null
+    muscles: number | null
+    breathing: number | null
+    energy: number | null
+    mood: number | null
+    pain_reports: number
+  }
   fitness: { ctl_before: number | null; ctl_after: number | null; tsb_after: number | null }
   coach_changes: { version: number; summary: string; created_at: string }[]
 }
@@ -318,6 +328,35 @@ export interface Activity {
   tss_method: TssMethod | null
   intensity_factor: number | null
   planned_workout_id?: number | null
+  feedback?: SessionFeedback | null
+}
+
+export type FeelDimension = 'muscles' | 'breathing' | 'energy' | 'mood'
+
+/** How a session felt: RPE 1-10, each dimension 1 (best) to 5 (worst). */
+export interface SessionFeedback {
+  id: number
+  activity_id: number
+  rpe: number
+  muscles: number | null
+  breathing: number | null
+  energy: number | null
+  mood: number | null
+  pain: boolean
+  pain_area: string | null
+  note: string | null
+  updated_at: string
+}
+
+export type SessionFeedbackInput = Omit<SessionFeedback, 'id' | 'activity_id' | 'updated_at'>
+
+/** A rating with the session it belongs to, for trends. */
+export interface FeedbackEntry extends SessionFeedback {
+  date: string
+  sport: Sport
+  activity_name: string | null
+  duration_s: number
+  planned_kind: WorkoutKind | null
 }
 
 export interface ActivityInput {

@@ -3,10 +3,11 @@ import { useDialog } from '@/composables/useDialog'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { workoutsApi } from '@/api'
-import type { PlannedWorkoutDetail, StructureBlock, WorkoutAlternative } from '@/api/types'
+import type { PlannedWorkoutDetail, SessionFeedback, StructureBlock, WorkoutAlternative } from '@/api/types'
 import SportBadge from '@/components/SportBadge.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
 import StepList from '@/components/StepList.vue'
+import FeelForm from '@/components/feel/FeelForm.vue'
 import { kindLabel } from '@/components/templates/labels'
 import WorkoutProfile from '@/components/charts/WorkoutProfile.vue'
 import AppAlert from '@/components/ui/AppAlert.vue'
@@ -49,6 +50,11 @@ watch(w, (value) => {
   if (value) minutes.value = Math.round(value.target_duration_s / 60)
   alternatives.value = null
 })
+
+function setFeedback(feedback: SessionFeedback | null): void {
+  const current = workout.data.value
+  if (current?.activity) workout.data.value = { ...current, activity: { ...current.activity, feedback } }
+}
 
 /** The next fortnight as one-tap targets for moving the session. */
 const moveDays = computed(() =>
@@ -201,6 +207,18 @@ async function skip(): Promise<void> {
           {{ w.activity.name ?? 'Activity' }} · {{ formatDuration(w.activity.duration_s) }} ·
           {{ formatTss(w.activity.tss) }} TSS
         </p>
+      </AppCard>
+
+      <AppCard v-if="w.activity" title="How did it feel?">
+        <p class="mb-4 text-sm text-slate-600">
+          Your coach reads this alongside the numbers: how you feel often shows fatigue before they do.
+        </p>
+        <FeelForm
+          :activity-id="w.activity.id"
+          :feedback="w.activity.feedback"
+          @saved="setFeedback"
+          @removed="setFeedback(null)"
+        />
       </AppCard>
 
       <AppCard v-if="changeable" title="Change it">

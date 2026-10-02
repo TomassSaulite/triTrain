@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { calendarApi, loadApi, plansApi, suggestionsApi } from '@/api'
+import { activitiesApi, calendarApi, loadApi, plansApi, suggestionsApi } from '@/api'
 import { ApiError } from '@/api/client'
-import type { CalendarDay, Plan, WeekProgress, WeeklyReview } from '@/api/types'
+import type { Activity, CalendarDay, Plan, WeekProgress, WeeklyReview } from '@/api/types'
 import CoachNotes from '@/components/CoachNotes.vue'
 import SuggestionsCard from '@/components/SuggestionsCard.vue'
 import WeeklyReviewCard from '@/components/WeeklyReviewCard.vue'
+import RateRecentCard from '@/components/feel/RateRecentCard.vue'
 import WorkoutCard from '@/components/WorkoutCard.vue'
 import LoadChart from '@/components/charts/LoadChart.vue'
 import AppAlert from '@/components/ui/AppAlert.vue'
@@ -21,6 +22,9 @@ import { hasSeen, markSeen, unmarkSeen } from '@/utils/seen'
 const auth = useAuthStore()
 const todayDate = today()
 
+/** Sessions from this many days back are offered for rating. */
+const RATE_WITHIN_DAYS = 3
+
 /** The active plan, or null when the athlete has not built one yet. */
 async function currentPlan(): Promise<Plan | null> {
   try {
@@ -32,18 +36,21 @@ async function currentPlan(): Promise<Plan | null> {
 }
 
 const dashboard = useAsync(async () => {
-  const [plan, week, summary, series, suggestions] = await Promise.all([
+  const [plan, week, summary, series, suggestions, recent] = await Promise.all([
     currentPlan(),
     calendarApi.range(todayDate, addDays(todayDate, 6)),
     loadApi.summary(),
     loadApi.series(addDays(todayDate, -90), todayDate),
     suggestionsApi.pending(),
+    activitiesApi.list({ from: addDays(todayDate, -(RATE_WITHIN_DAYS - 1)) }),
   ])
   const [progress, review]: [WeekProgress[], WeeklyReview | null] = plan
     ? await Promise.all([plansApi.progress(plan.id), plansApi.weeklyReview(plan.id)])
     : [[], null]
 
-  return { plan, days: week.data, summary, series, suggestions, progress, review }
+  const unrated = recent.data.filter((a) => !a.feedback)
+
+  return { plan, days: week.data, summary, series, suggestions, progress, review, unrated }
 })
 
 const todayEntry = computed<CalendarDay | undefined>(() => dashboard.data.value?.days[0])
@@ -69,6 +76,11 @@ function dismissReview(): void {
 function reopenReview(): void {
   unmarkSeen(reviewKey.value)
   reviewDismissed.value = false
+}
+
+function markRated(activity: Activity): void {
+  const data = dashboard.data.value
+  if (data) dashboard.data.value = { ...data, unrated: data.unrated.filter((a) => a.id !== activity.id) }
 }
 
 function removeSuggestion(id: number): void {
@@ -117,6 +129,7 @@ function formLabel(tsb: number): string {
         and the coach will build one.
       </AppAlert>
       <WeeklyReviewCard v-if="showReview && review" :review="review" @dismiss="dismissReview" />
+      <RateRecentCard :activities="dashboard.data.value.unrated" @rated="markRated" />
       <CoachNotes :notes="dashboard.data.value.plan?.warnings ?? []" />
 
       <SuggestionsCard :suggestions="dashboard.data.value.suggestions" @resolved="removeSuggestion" />
