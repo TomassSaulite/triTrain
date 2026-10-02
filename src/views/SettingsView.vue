@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AvailabilitySection from '@/components/settings/AvailabilitySection.vue'
+import CalendarSection from '@/components/settings/CalendarSection.vue'
 import CoachSection from '@/components/settings/CoachSection.vue'
 import ProfileSection from '@/components/settings/ProfileSection.vue'
 import StravaSection from '@/components/settings/StravaSection.vue'
@@ -11,6 +12,7 @@ const sections = [
   { id: 'thresholds', label: 'Thresholds' },
   { id: 'availability', label: 'Travel and busy days' },
   { id: 'strava', label: 'Strava' },
+  { id: 'calendar', label: 'Your calendar' },
 ]
 </script>
 
@@ -34,6 +36,7 @@ const sections = [
       <ThresholdsSection />
       <AvailabilitySection />
       <StravaSection />
+      <CalendarSection />
     </div>
   </div>
 </template>

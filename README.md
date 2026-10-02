@@ -34,7 +34,8 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
   and build your own (or copy and adapt one) with a step editor. Your workouts are preferred
   wherever they fit a slot.
 - **Settings**: profile and week, coaching knobs (ramp limit, recovery cadence, target fitness,
-  daily time limits, sport split), thresholds, travel and busy days, and Strava.
+  daily time limits, sport split), thresholds, travel and busy days, Strava, and a private
+  calendar link that puts your sessions and races in Google, Apple or Outlook calendar.
 
 On phones the main sections sit in a bottom tab bar, with the rest under More.
 

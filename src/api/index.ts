@@ -121,6 +121,13 @@ export const calendarApi = {
   range: (from: string, to: string) => client.get<Calendar>('calendar', { from, to }),
 }
 
+/** The private iCalendar link that calendar apps subscribe to; url is null when it is off. */
+export const calendarFeedApi = {
+  get: () => unwrap(client.get<Data<{ url: string | null }>>('calendar-feed')),
+  enable: () => unwrap(client.post<Data<{ url: string }>>('calendar-feed')),
+  disable: () => client.delete('calendar-feed'),
+}
+
 export const workoutsApi = {
   get: (id: number) => unwrap(client.get<Data<PlannedWorkoutDetail>>(`planned-workouts/${id}`)),
   move: (id: number, date: string) =>
