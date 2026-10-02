@@ -11,7 +11,7 @@ import AppCard from '@/components/ui/AppCard.vue'
 import LoadingState from '@/components/ui/LoadingState.vue'
 import { useAsync } from '@/composables/useAsync'
 import { useForm } from '@/composables/useForm'
-import { addDays, formatDate, today } from '@/utils/dates'
+import { addDays, nextSunday, formatDate, today } from '@/utils/dates'
 
 const router = useRouter()
 
@@ -31,13 +31,23 @@ const page = useAsync(async () => {
 
 const { submitting, error, fieldErrors, submit } = useForm()
 const editing = ref<number | 'new' | null>(null)
-const draft = reactive<RaceInput>({ name: '', distance: 'half', date: addDays(today(), 140), priority: 'A' })
+const draft = reactive<RaceInput>({
+  name: '',
+  distance: 'half',
+  date: nextSunday(addDays(today(), 7 * 20)),
+  priority: 'A',
+})
 
 const upcoming = computed(() => (page.data.value?.races ?? []).filter((r) => r.date >= today()))
 const past = computed(() => (page.data.value?.races ?? []).filter((r) => r.date < today()).reverse())
 
 function startNew(): void {
-  Object.assign(draft, { name: '', distance: 'half', date: addDays(today(), 140), priority: 'A' })
+  Object.assign(draft, {
+    name: '',
+    distance: 'half',
+    date: nextSunday(addDays(today(), 7 * 20)),
+    priority: 'A',
+  })
   editing.value = 'new'
 }
 

@@ -13,7 +13,7 @@ import AppAlert from '@/components/ui/AppAlert.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import { useForm } from '@/composables/useForm'
 import { useAuthStore } from '@/stores/auth'
-import { addDays, today } from '@/utils/dates'
+import { addDays, nextSunday, today } from '@/utils/dates'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -41,7 +41,7 @@ const thresholdErrors = ref<Record<string, string>>({})
 const race = reactive<RaceInput>({
   name: '',
   distance: 'half',
-  date: addDays(today(), 7 * 20),
+  date: nextSunday(addDays(today(), 7 * 20)),
   priority: 'A',
 })
 

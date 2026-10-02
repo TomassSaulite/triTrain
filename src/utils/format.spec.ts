@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, daysBetween, startOfWeek, weekday } from './dates'
+import { addDays, daysBetween, nextSunday, startOfWeek, weekday } from './dates'
 import {
   formatClock,
   formatDistance,
@@ -52,5 +52,9 @@ describe('dates', () => {
     expect(weekday('2026-10-04')).toBe(7)
     expect(startOfWeek('2026-10-04')).toBe('2026-09-28')
     expect(startOfWeek('2026-10-05')).toBe('2026-10-05')
+  })
+  it('finds the next Sunday for default race dates', () => {
+    expect(nextSunday('2026-10-02')).toBe('2026-10-04')
+    expect(nextSunday('2026-10-04')).toBe('2026-10-04')
   })
 })

@@ -26,7 +26,7 @@ const RESULTS: Record<string, { tone: 'success' | 'error'; text: string }> = {
   },
   exchange_failed: { tone: 'error', text: 'Strava did not accept the authorization. Please try again.' },
 }
-const result = typeof route.query.strava === 'string' ? RESULTS[route.query.strava] : undefined
+const result = typeof route.query.status === 'string' ? RESULTS[route.query.status] : undefined
 
 async function connect(): Promise<void> {
   busy.value = true

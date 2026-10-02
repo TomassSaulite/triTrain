@@ -35,6 +35,11 @@ export function startOfWeek(value: string): string {
   return addDays(value, 1 - weekday(value))
 }
 
+/** The first Sunday on or after a date: a sensible default for a race day. */
+export function nextSunday(value: string): string {
+  return addDays(value, (7 - weekday(value)) % 7)
+}
+
 export function daysBetween(from: string, to: string): number {
   return Math.round((parseDate(to).getTime() - parseDate(from).getTime()) / 86_400_000)
 }
