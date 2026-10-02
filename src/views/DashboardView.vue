@@ -5,6 +5,7 @@ import { ApiError } from '@/api/client'
 import type { Activity, CalendarDay, Plan, WeekProgress, WeeklyReview } from '@/api/types'
 import CoachNotes from '@/components/CoachNotes.vue'
 import SuggestionsCard from '@/components/SuggestionsCard.vue'
+import TakeBreakCard from '@/components/TakeBreakCard.vue'
 import WeeklyReviewCard from '@/components/WeeklyReviewCard.vue'
 import RateRecentCard from '@/components/feel/RateRecentCard.vue'
 import WorkoutCard from '@/components/WorkoutCard.vue'
@@ -83,6 +84,13 @@ function markRated(activity: Activity): void {
   if (data) dashboard.data.value = { ...data, unrated: data.unrated.filter((a) => a.id !== activity.id) }
 }
 
+/** The plan is rebuilt in the background; look again once it has had a moment. */
+const REPLAN_DELAY_MS = 3000
+
+function refreshSoon(): void {
+  setTimeout(() => void dashboard.run(), REPLAN_DELAY_MS)
+}
+
 function removeSuggestion(id: number): void {
   const data = dashboard.data.value
   if (data) dashboard.data.value = { ...data, suggestions: data.suggestions.filter((s) => s.id !== id) }
@@ -146,6 +154,7 @@ function formLabel(tsb: number): string {
             Race day: {{ todayEntry.races[0].name }}. Good luck!
           </p>
           <p v-else class="text-sm text-slate-500">Rest day. Recovery is training too.</p>
+          <TakeBreakCard class="mt-4 border-t border-slate-100 pt-3" @done="refreshSoon" />
         </AppCard>
 
         <AppCard title="Fitness, fatigue and form" class="lg:col-span-2">

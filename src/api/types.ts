@@ -122,10 +122,14 @@ export interface RaceInput {
   priority?: RacePriority
 }
 
+export type BreakReason = 'sick' | 'injured' | 'away' | 'other'
+
 export interface AvailabilityOverride {
   date: string
   available_minutes: number
   note: string | null
+  /** Only easy sessions that day, e.g. the first days back after being sick. */
+  easy_only: boolean
 }
 
 export interface PlanPhase {
@@ -394,6 +398,8 @@ export interface CalendarDay {
   workouts: PlannedWorkout[]
   activities: Activity[]
   races: Race[]
+  /** The day's own availability (a day off sick, a short or easy day), if any. */
+  availability: AvailabilityOverride | null
 }
 
 export interface Calendar {

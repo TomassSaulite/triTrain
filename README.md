@@ -8,6 +8,9 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
 
 - **Onboarding**: experience and weekly hours, the athlete's week (long ride and run days,
   pool days, rest days, bricks), thresholds, and the goal race that builds the first plan.
+- **Can't train?**: on Today, tell the coach you are sick, injured or away for a day, a few days
+  or a week; the plan is rebuilt around the break, and the first days back after illness or
+  injury are kept short and easy. The calendar shows those days for what they are.
 - **Today**: recent sessions waiting for a "how did it feel?" rating, last week in review (a verdict, planned load and key sessions done, the coach's
   notes, what next week brings and what the coach changed; dismiss it once read), today's
   sessions and why each is in the plan, the phase and focus of the week,

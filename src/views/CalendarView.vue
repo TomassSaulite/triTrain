@@ -57,6 +57,19 @@ const title = computed(() => {
 /** Activities the coach could not match to a planned session. */
 const extras = (day: CalendarDay) => day.activities.filter((a) => !a.planned_workout_id)
 
+/** A day's own availability in a few words: "Sick: Flu", "Easy day · 45 min". */
+function availabilityLabel(day: CalendarDay): string | null {
+  const a = day.availability
+  if (!a) return null
+  const what =
+    a.available_minutes === 0
+      ? 'No training'
+      : a.easy_only
+        ? `Easy day · ${a.available_minutes} min`
+        : `${a.available_minutes} min available`
+  return a.note && a.available_minutes === 0 ? a.note : a.note ? `${what} · ${a.note}` : what
+}
+
 const dayTime = (day: CalendarDay) =>
   day.workouts.filter((w) => w.status !== 'dropped').reduce((sum, w) => sum + w.target_duration_s, 0)
 
@@ -192,6 +205,12 @@ async function drop(date: string): Promise<void> {
           </p>
           <div class="space-y-1.5">
             <p
+              v-if="availabilityLabel(day)"
+              class="rounded-md bg-slate-100 px-2 py-1.5 text-sm text-slate-700"
+            >
+              {{ availabilityLabel(day) }}
+            </p>
+            <p
               v-for="race in day.races"
               :key="race.id"
               class="rounded-md bg-amber-100 px-2 py-1.5 text-sm font-semibold text-amber-900"
@@ -208,7 +227,7 @@ async function drop(date: string): Promise<void> {
               {{ a.name ?? 'Extra session' }} · {{ formatDuration(a.duration_s) }}
             </p>
             <p
-              v-if="!day.workouts.length && !day.races.length && !extras(day).length"
+              v-if="!day.workouts.length && !day.races.length && !extras(day).length && !day.availability"
               class="text-sm text-slate-400"
             >
               Rest
@@ -249,6 +268,12 @@ async function drop(date: string): Promise<void> {
                 }}</span>
               </p>
               <div class="space-y-1.5">
+                <p
+                  v-if="availabilityLabel(day)"
+                  class="rounded-md bg-white/70 px-2 py-1 text-xs text-slate-600 ring-1 ring-slate-200"
+                >
+                  {{ availabilityLabel(day) }}
+                </p>
                 <p
                   v-for="race in day.races"
                   :key="race.id"

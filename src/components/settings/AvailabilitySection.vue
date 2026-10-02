@@ -34,7 +34,8 @@ async function clear(date: string): Promise<void> {
 <template>
   <AppCard id="availability" title="Travel and busy days">
     <p class="mb-4 text-sm text-slate-600">
-      Mark days you can't train, or only briefly. Your plan is adjusted around them.
+      Mark days you can't train, or only briefly. Your plan is adjusted around them. Sick, injured or away for
+      a few days? Use "Can't train?" on the Today page.
     </p>
     <form class="grid items-end gap-3 sm:grid-cols-[auto_auto_1fr_auto]" @submit.prevent="add">
       <AppField
@@ -64,6 +65,7 @@ async function clear(date: string): Promise<void> {
           <span>
             <span class="font-medium">{{ formatDate(o.date) }}</span> ·
             {{ o.available_minutes === 0 ? 'No training' : `${o.available_minutes} min` }}
+            <span v-if="o.easy_only" class="text-slate-500">· easy only</span>
             <span v-if="o.note" class="text-slate-500">· {{ o.note }}</span>
           </span>
           <button class="text-slate-500 hover:text-rose-700" @click="clear(o.date)">Remove</button>

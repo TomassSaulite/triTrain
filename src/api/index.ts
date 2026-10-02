@@ -7,6 +7,7 @@ import type {
   AthleteInput,
   AuthResponse,
   AvailabilityOverride,
+  BreakReason,
   Calendar,
   DailyLoad,
   FeedbackEntry,
@@ -101,6 +102,9 @@ export const availabilityApi = {
       }),
     ),
   clear: (date: string) => client.delete(`availability/${date}`),
+  /** Marks a run of days as no-training days; the plan is rebuilt around them. */
+  takeBreak: (input: { from: string; to: string; reason: BreakReason; note?: string | null }) =>
+    unwrap(client.post<Data<AvailabilityOverride[]>>('availability/break', input)),
 }
 
 export const plansApi = {
