@@ -8,21 +8,27 @@ plan, scores every session and adapts the remaining weeks as training syncs in.
 
 - **Onboarding**: experience and weekly hours, the athlete's week (long ride and run days,
   pool days, rest days, bricks), thresholds, and the goal race that builds the first plan.
-- **Today**: today's sessions, the next six days, race countdown, plan warnings, threshold
-  suggestions to accept or dismiss, this week's planned against done load, and fitness,
+- **Today**: today's sessions and why each is in the plan, the phase and focus of the week,
+  the next six days, race countdown, the coach's notes on the plan, threshold suggestions to accept or dismiss, this week's planned against done load, and fitness,
   fatigue and form over 90 days.
 - **Calendar**: a week or four-week view of planned sessions, races and extra activities.
+  Drag a session to another day to move it; on phones the days are a list.
 - **Workout detail**: the session's steps with the athlete's real targets (watts, paces, heart
-  rate) next to the relative ones, an intensity profile, and moving or skipping a session.
+  rate) next to the relative ones, an intensity profile, and changing the session: its
+  length, swapping it for another workout, moving it (one tap for the next two weeks) or
+  skipping it. Each change is confirmed with an Undo.
 - **Plan**: phases, planned against done load per week, a week-by-week table, re-planning, and
   the "what changed and why" log.
-- **Races**: A, B and C races; build a plan from an A race.
+- **Races**: A, B and C races, including running races inside a triathlon plan; build a plan
+  from an A race.
 - **Activities**: history, manual logging, and how each session was scored.
 - **Workouts**: the library the coach builds plans from. Browse and inspect every workout,
   and build your own (or copy and adapt one) with a step editor. Your workouts are preferred
   wherever they fit a slot.
 - **Settings**: profile and week, coaching knobs (ramp limit, recovery cadence, target fitness,
   daily time limits, sport split), thresholds, travel and busy days, and Strava.
+
+On phones the main sections sit in a bottom tab bar, with the rest under More.
 
 ## Getting started
 
