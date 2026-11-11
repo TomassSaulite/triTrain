@@ -1,5 +1,7 @@
 # TriTrain
 
+[![CI](https://github.com/TomassSaulite/triTrain/actions/workflows/ci.yml/badge.svg)](https://github.com/TomassSaulite/triTrain/actions/workflows/ci.yml)
+
 The web app for TriTrain, a triathlon training app that works like a customizable coach. It
 talks to the [TriTrain API](https://github.com/TomassSaulite/triTrainAPI), which builds the
 plan, scores every session and adapts the remaining weeks as training syncs in.
