@@ -93,6 +93,10 @@ It then opens full screen from the home screen, starts instantly, and still open
 connection, asking to reconnect for fresh data. A new version waits until you tap *Reload*.
 The icon's source is `assets/icon.svg`.
 
+## Quality
+
+See [`docs/quality.md`](docs/quality.md) for the accessibility, performance, and release checklist.
+
 ## Scripts
 
 | Command | What it does |
