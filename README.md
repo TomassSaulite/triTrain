@@ -48,6 +48,24 @@ On phones the main sections sit in a bottom tab bar, with the rest under More. A
 Activities (and on More) counts recent sessions still waiting for a "how did it feel?" rating.
 The app follows the device's light or dark mode, or a theme picked under Settings → Appearance.
 
+## Try the demo locally
+
+The API seeds a demo athlete with six weeks of history and a generated plan:
+
+```bash
+# in triTrainAPI
+composer setup
+php artisan db:seed
+composer dev
+
+# in triTrain
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Use `demo@tritrain.test` / `password`, then open **Today**, **Calendar**, and **Plan** to see the coach's decisions and adaptation history.
+
 ## Getting started
 
 Requirements: Node 22+, and the API running (see its README; `php artisan db:seed` in a local
